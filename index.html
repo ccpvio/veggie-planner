@@ -1465,6 +1465,371 @@ function calcDayNutrition(dishes,soup){
   return{protein:Math.round(total.p),calcium:Math.round(total.ca),iron:+(total.fe.toFixed(1)),vitC:Math.round(total.vc),fiber:+(total.fi.toFixed(1)),kcal:Math.round(total.kcal),b12:+(total.b12.toFixed(2)),b2:+(total.b2.toFixed(2))};
 }
 
+
+
+// ── Garden reward system ─────────────────────────────────
+const GARDEN_KEY = "veggie_garden";
+const GARDEN_COMPLETION_KEY = "veggie_garden_completion";
+const GARDEN_SEASON_DAYS = 14 * 7;
+const SEASON_POOL = {
+  spring: { months: [3,4,5], bonus: ['mint','beansprout','tomato'] },
+  summer: { months: [6,7,8], bonus: ['sunflower','lotus','eggplant'] },
+  autumn: { months: [9,10,11], bonus: ['pumpkin','mushroom','carrot'] },
+  winter: { months: [12,1,2], bonus: ['radish','cabbage','spinach'] },
+};
+const CATEGORY_LABELS = {
+  leafy: '葉菜', tofu: '豆製品', veggie: '其他蔬菜', egg: '蛋類', mushroom: '菇類', soup: '湯品'
+};
+const GARDEN_TYPE_LABELS = {
+  mint: '薄荷草', spinach: '菠菜叢', cabbage: '包心菜', mushroom: '蘑菇', beansprout: '豆苗藤',
+  radish: '白蘿蔔', carrot: '紅蘿蔔', tomato: '番茄', pumpkin: '南瓜', eggplant: '茄子', sunflower: '向日葵', lotus: '蓮花'
+};
+const PLANT_VARIANTS = { mint:3, spinach:2, cabbage:2, mushroom:3, beansprout:2, radish:1, carrot:1, tomato:2, pumpkin:1, eggplant:1, sunflower:2, lotus:2 };
+const VEGGIE_TYPES = ['radish','carrot','tomato','pumpkin','eggplant'];
+
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function safeParse(json, fallback){
+  try{return json?JSON.parse(json):fallback;}catch(e){return fallback;}
+}
+function loadCompletionMap(){
+  try{return safeParse(localStorage.getItem(GARDEN_COMPLETION_KEY),{});}catch(e){return {};}
+}
+function saveCompletionMap(map){
+  try{localStorage.setItem(GARDEN_COMPLETION_KEY, JSON.stringify(map));}catch(e){}
+}
+function daysBetween(a,b){
+  const da = new Date(a+'T00:00:00');
+  const db = new Date(b+'T00:00:00');
+  return Math.floor((db-da)/(1000*60*60*24));
+}
+function plusDays(iso, days){
+  const d = new Date(iso+'T00:00:00');
+  d.setDate(d.getDate()+days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function getDayOfYear(iso=todayISO()){
+  const d = new Date(iso+'T00:00:00');
+  const start = new Date(d.getFullYear(),0,0);
+  return Math.floor((d-start)/(1000*60*60*24));
+}
+function getSeasonNameByMonth(month){
+  return Object.entries(SEASON_POOL).find(([,v])=>v.months.includes(month))?.[0] || 'spring';
+}
+function normalizeGardenData(data){
+  const today = todayISO();
+  const base = data && typeof data === 'object' ? data : {};
+  let season = Number(base.season) || 1;
+  let seasonStart = typeof base.seasonStart === 'string' ? base.seasonStart : today;
+  let gap = daysBetween(seasonStart, today);
+  while(gap >= GARDEN_SEASON_DAYS){
+    season += 1;
+    seasonStart = plusDays(seasonStart, GARDEN_SEASON_DAYS);
+    gap = daysBetween(seasonStart, today);
+  }
+  const plants = Array.isArray(base.plants) ? base.plants.map((p,i)=>({
+    id: p.id || `${p.date || today}-${i}`,
+    date: p.date || today,
+    type: p.type || 'mint',
+    variant: Number.isFinite(p.variant) ? p.variant : 0,
+    x: typeof p.x === 'number' ? p.x : 0.5,
+    y: typeof p.y === 'number' ? p.y : 0.78,
+    wateredCount: Number(p.wateredCount) || 0,
+    lastWatered: p.lastWatered || null,
+    stage: Number(p.stage) || 1,
+    mood: p.mood || 'sunny',
+    category: p.category || 'veggie',
+    bloomedAt: typeof p.bloomedAt === 'number' ? p.bloomedAt : null,
+  })) : [];
+  return { season, seasonStart, plants };
+}
+function loadGardenData(){
+  try{return normalizeGardenData(safeParse(localStorage.getItem(GARDEN_KEY), null));}catch(e){return normalizeGardenData(null);}
+}
+function saveGardenData(data){
+  try{localStorage.setItem(GARDEN_KEY, JSON.stringify(data));}catch(e){}
+}
+function getTodayCategory(dishes){
+  const catMap = { '葉菜':'leafy', '豆製品':'tofu', '其他蔬菜':'veggie', '蛋類':'egg', '菇類':'mushroom', '湯品':'soup' };
+  const counts = {};
+  (dishes||[]).forEach(d => {
+    const c = catMap[d?.cat] || 'veggie';
+    counts[c] = (counts[c] || 0) + 1;
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'veggie';
+}
+function getPlantType(category, dateISO, plantCount){
+  const dayOfYear = getDayOfYear(dateISO);
+  const month = new Date(dateISO+'T00:00:00').getMonth()+1;
+  const seasonKey = getSeasonNameByMonth(month);
+  const pool = SEASON_POOL[seasonKey];
+  let type = 'mint';
+  if(category === 'leafy'){
+    type = ['mint','spinach','cabbage'][dayOfYear % 3];
+  }else if(category === 'mushroom'){
+    type = 'mushroom';
+  }else if(category === 'tofu'){
+    type = 'beansprout';
+  }else if(category === 'egg'){
+    type = 'sunflower';
+  }else if(category === 'soup'){
+    type = 'lotus';
+  }else{
+    type = VEGGIE_TYPES[dayOfYear % VEGGIE_TYPES.length];
+  }
+  const bonusHit = pool.bonus.includes(type) || (((dayOfYear * 17 + plantCount * 11) % 10) < 3 && category === 'veggie' && pool.bonus.some(t=>VEGGIE_TYPES.includes(t)));
+  if(category === 'veggie' && bonusHit){
+    const veggieBonus = pool.bonus.filter(t=>VEGGIE_TYPES.includes(t));
+    if(veggieBonus.length) type = veggieBonus[(dayOfYear + plantCount) % veggieBonus.length];
+  }
+  return type;
+}
+function getPlantMood(dateISO){
+  const n = getDayOfYear(dateISO) % 3;
+  return n===0 ? 'sunny' : n===1 ? 'cloudy' : 'rainy';
+}
+function getStage(plant){
+  const w = plant.wateredCount || 0;
+  const daysSincePlanted = Math.max(0, daysBetween(plant.date, todayISO()));
+  if (daysSincePlanted === 0) return 1;
+  if (daysSincePlanted >= 1 && w === 0) return 2;
+  if (w >= 1 && w < 2) return 3;
+  if (w >= 2 && w < 4) return 4;
+  if (w >= 4 && w < 6) return 5;
+  if (w >= 6 && w < 8) return 6;
+  if (w >= 8) {
+    const bloomDay = typeof plant.bloomedAt === 'number' ? plant.bloomedAt : daysSincePlanted;
+    return daysSincePlanted < bloomDay + 7 ? 7 : 8;
+  }
+  return 2;
+}
+function getDepthScale(plant, allPlants) {
+  const sorted = [...allPlants].sort((a,b) => a.date.localeCompare(b.date));
+  const rank = Math.max(0, sorted.findIndex(p=>p.id===plant.id));
+  const total = allPlants.length;
+  const ratio = rank / Math.max(total - 1, 1);
+  return {
+    scale: 0.5 + ratio * 0.5,
+    opacity: 0.6 + ratio * 0.4,
+    yBase: 0.2 + (1 - ratio) * 0.5,
+    zIndex: Math.round(ratio * 100),
+  };
+}
+function plantNeedsWater(plant){
+  const t = todayISO();
+  return plant.date !== t && plant.lastWatered !== t && getStage(plant) < 8;
+}
+function stalePlant(plant){
+  return plant.lastWatered && daysBetween(plant.lastWatered, todayISO()) > 3;
+}
+function PlantSVG({ plant, allPlants }){
+  const stage = getStage(plant);
+  const stale = stalePlant(plant);
+  const leaf = stale ? '#c8c27a' : (plant.category==='leafy' ? '#6ea95b' : '#61a94f');
+  const leaf2 = stale ? '#d9d59a' : '#8ac76d';
+  const stem = stale ? '#8a8d4f' : '#5e9b47';
+  const earth = '#6b4226';
+  const bloom = plant.type==='sunflower' ? '#f7c948'
+    : plant.type==='tomato' ? '#e0554f'
+    : plant.type==='eggplant' ? '#7e57c2'
+    : plant.type==='pumpkin' ? '#f39c35'
+    : plant.type==='lotus' ? '#f6b9cc'
+    : plant.type==='mushroom' ? '#c88b6a'
+    : '#6fcf97';
+  const fruit = plant.type==='carrot' ? '#f18b2d'
+    : plant.type==='radish' ? '#fff2f2'
+    : plant.type==='pumpkin' ? '#d97d22'
+    : plant.type==='tomato' ? '#d94c45'
+    : plant.type==='eggplant' ? '#5f3ca6'
+    : bloom;
+  const depth = getDepthScale(plant, allPlants);
+  const seedParticles = stage>=8 ? [
+    {dx:-14,dy:-18,d:0},{dx:18,dy:-22,d:.15},{dx:9,dy:-32,d:.3}
+  ] : [];
+  const varShift = (plant.variant||0) * 2;
+  return (
+    <div className={stage>=7?"plant-bloomed":""} style={{position:'absolute',left:`${plant.x*100}%`,bottom:`${Math.max(6,(1-plant.y)*20)}%`,transform:`translateX(-50%) scale(${depth.scale})`,opacity:depth.opacity,zIndex:depth.zIndex,width:72,height:120,pointerEvents:'none'}}>
+      <svg viewBox="0 0 60 100" style={{width:'100%',height:'100%',overflow:'visible'}}>
+        {stage===1 && <ellipse cx="30" cy="90" rx={8+varShift*0.4} ry="4" fill={earth} />}
+        {stage>=2 && <line x1="30" y1="85" x2="30" y2={stage>=5?40:80-stage*4} stroke={stem} strokeWidth={stage>=5?4:3} strokeLinecap="round" />}
+        {stage>=2 && <path d="M30 79 Q31 77 33 76" fill="none" stroke={leaf2} strokeWidth="2.4" strokeLinecap="round" />}
+        {stage>=3 && <>
+          <ellipse cx={24-varShift*0.2} cy="76" rx="7" ry="4.5" fill={leaf2} transform="rotate(-22 24 76)"/>
+          <ellipse cx={36+varShift*0.2} cy="76" rx="7" ry="4.5" fill={leaf2} transform="rotate(22 36 76)"/>
+        </>}
+        {stage>=4 && <>
+          <ellipse cx="23" cy="67" rx="8" ry="4.8" fill={leaf} transform="rotate(-28 23 67)"/>
+          <ellipse cx="37" cy="65" rx="8.5" ry="5" fill={leaf} transform="rotate(24 37 65)"/>
+        </>}
+        {stage>=5 && <>
+          <ellipse cx="22" cy="57" rx="9" ry="5.2" fill={leaf2} transform="rotate(-26 22 57)"/>
+          <ellipse cx="39" cy="52" rx="9" ry="5" fill={leaf2} transform="rotate(26 39 52)"/>
+          {plant.type==='beansprout' && <path d="M30 56 C38 52, 44 48, 43 38" fill="none" stroke={stem} strokeWidth="3" strokeLinecap="round"/>}
+        </>}
+        {stage>=6 && plant.type==='mushroom' && <>
+          <line x1="27" y1="43" x2="27" y2="31" stroke="#e9dcc9" strokeWidth="4" strokeLinecap="round"/>
+          <ellipse cx="27" cy="29" rx="10" ry="6" fill={bloom}/>
+          <circle cx="23" cy="28" r="1.1" fill="#f9efe3"/><circle cx="29" cy="26" r="1" fill="#f9efe3"/>
+        </>}
+        {stage>=6 && plant.type!=='mushroom' && plant.type!=='lotus' && <>
+          {plant.type==='sunflower'
+            ? <circle cx="30" cy="28" r={stage>=7?7:5} fill={stage>=7?'#7d4e20':'#5a8f3a'} />
+            : plant.type==='tomato'
+              ? <circle cx="30" cy="28" r={stage>=7?6.5:4.8} fill={fruit} />
+              : plant.type==='pumpkin'
+                ? <ellipse cx="30" cy="28" rx={stage>=7?9:6.2} ry={stage>=7?7.2:5} fill={fruit} />
+                : plant.type==='eggplant'
+                  ? <ellipse cx="31" cy="29" rx={stage>=7?6.2:4.5} ry={stage>=7?10:7} fill={fruit} transform="rotate(18 31 29)"/>
+                  : plant.type==='carrot'
+                    ? <path d="M30 23 L36 38 L24 38 Z" fill={fruit} />
+                    : plant.type==='radish'
+                      ? <ellipse cx="30" cy="29" rx={stage>=7?7:5.5} ry={stage>=7?8.5:6} fill={fruit} />
+                      : <ellipse cx="30" cy="28" rx={stage>=7?7:5} ry={stage>=7?9:6} fill={bloom} />
+          }
+          {plant.type!=='sunflower' && <path d="M30 20 C28 22, 26 23, 24 23" fill="none" stroke={leaf2} strokeWidth="2" strokeLinecap="round"/>}
+        </>}
+        {stage>=6 && plant.type==='lotus' && <>
+          <line x1="30" y1="86" x2="30" y2="38" stroke={stem} strokeWidth="3.6" strokeLinecap="round"/>
+          <ellipse cx="18" cy="56" rx="11" ry="6" fill="#6daa5f" />
+          <ellipse cx="42" cy="52" rx="11" ry="6" fill="#6daa5f" />
+          <ellipse cx="30" cy="32" rx={stage>=7?9:6} ry={stage>=7?7:5} fill="#f3aac0" />
+          {stage>=7 && <>
+            <ellipse cx="23" cy="35" rx="5" ry="12" fill="#f8c7d5" transform="rotate(-28 23 35)"/>
+            <ellipse cx="37" cy="35" rx="5" ry="12" fill="#f8c7d5" transform="rotate(28 37 35)"/>
+            <ellipse cx="30" cy="28" rx="5" ry="12" fill="#ffd4df" />
+          </>}
+        </>}
+        {stage>=7 && plant.type==='sunflower' && <>
+          {Array.from({length:12}).map((_,i)=>{
+            const a = i * Math.PI / 6;
+            const x = 30 + Math.cos(a)*11;
+            const y = 28 + Math.sin(a)*11;
+            return <ellipse key={i} cx={x} cy={y} rx="3.1" ry="6.3" fill="#f4ca49" transform={`rotate(${i*30} ${x} ${y})`} />;
+          })}
+          <circle cx="30" cy="28" r="6.8" fill="#7c4c20"/>
+        </>}
+        {stage>=7 && plant.type==='cabbage' && <>
+          <circle cx="30" cy="28" r="10" fill="#88bc6a"/>
+          <path d="M22 28 Q30 18 38 28" fill="none" stroke="#a8d18a" strokeWidth="1.6"/>
+          <path d="M22 31 Q30 41 38 31" fill="none" stroke="#a8d18a" strokeWidth="1.4"/>
+        </>}
+        {stage>=7 && plant.type==='spinach' && <>
+          <ellipse cx="25" cy="30" rx="5" ry="13" fill="#6dac5a" transform="rotate(-12 25 30)"/>
+          <ellipse cx="35" cy="30" rx="5" ry="13" fill="#79b867" transform="rotate(12 35 30)"/>
+        </>}
+        {stage>=7 && plant.type==='mint' && <>
+          <ellipse cx="24" cy="28" rx="4.5" ry="11" fill="#78c989" transform="rotate(-24 24 28)"/>
+          <ellipse cx="36" cy="27" rx="4.5" ry="11" fill="#83d39a" transform="rotate(22 36 27)"/>
+          <ellipse cx="30" cy="23" rx="4.2" ry="9" fill="#93ddb0"/>
+        </>}
+        {stage>=8 && plant.type==='sunflower' && <>
+          {Array.from({length:8}).map((_,i)=><circle key={i} cx={26 + (i%4)*2.2} cy={24 + Math.floor(i/4)*4} r="0.9" fill="#3c2412"/>) }
+        </>}
+      </svg>
+      {seedParticles.map((p,i)=><span key={i} className="seed-float" style={{left:'50%',bottom:'70%', ['--dx']: `${p.dx}px`, ['--dy']: `${p.dy}px`, animationDelay:`${p.d}s`}}>•</span>)}
+    </div>
+  );
+}
+function GardenView({ plants, gardenData, canPlantToday, hasPlantedToday, pendingPlant, todayCompleted, onBeginPlant, onCancelPlant, onPlantAt, onWater }){
+  const today = todayISO();
+  const month = new Date(today+'T00:00:00').getMonth()+1;
+  const seasonKey = getSeasonNameByMonth(month);
+  const seasonLabel = {spring:'春',summer:'夏',autumn:'秋',winter:'冬'}[seasonKey] || '春';
+  const bloomedCount = plants.filter(p=>getStage(p)>=7).length;
+  const waterablePlants = plants.filter(plantNeedsWater);
+  const longestWaterStreak = plants.reduce((m,p)=>Math.max(m, Number(p.wateredCount)||0),0);
+  const showButterfly = longestWaterStreak >= 7;
+  const showBee = bloomedCount >= 10;
+  const handlePlotClick = (e)=>{
+    if(!pendingPlant) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.min(0.94, Math.max(0.06, (e.clientX - rect.left) / rect.width));
+    const y = Math.min(0.9, Math.max(0.22, (e.clientY - rect.top) / rect.height));
+    onPlantAt(x,y);
+  };
+  return (
+    <div style={{padding:'12px 12px 100px',background:'linear-gradient(180deg, #f5fbf2 0%, #eef7ea 100%)'}}>
+      <div className="recipe-paper" style={{borderRadius:18,padding:'14px 14px 12px',marginBottom:12,background:'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,252,244,0.96))'}}>
+        <div style={{display:'flex',justifyContent:'space-between',gap:10,alignItems:'flex-start'}}>
+          <div>
+            <div className="journal-kicker" style={{marginBottom:8}}>第 {gardenData.season} 季 · {seasonLabel}</div>
+            <div className="warm-script" style={{fontSize:34,lineHeight:1.12,color:'#3f4d2d',marginBottom:6}}>已陪你 {daysBetween(gardenData.seasonStart, today)+1} 天</div>
+            <div style={{fontSize:14,color:'#6d7b60',lineHeight:1.8}}>花圃不分週次，會一直長成屬於你的整片菜園。</div>
+          </div>
+          <div style={{textAlign:'right',fontSize:13,color:'#7a866d',lineHeight:1.8,whiteSpace:'nowrap'}}>
+            <div>🌸 盛開 {bloomedCount} 株</div>
+            <div>🌱 種子 {plants.length} 顆</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="recipe-paper" style={{borderRadius:20,overflow:'hidden',marginBottom:12,padding:0}}>
+        <div style={{padding:'12px 14px',borderBottom:'1px solid rgba(125,147,108,0.16)',background:'linear-gradient(180deg, #f5fbf1 0%, #eef7ea 100%)'}}>
+          <div style={{fontSize:14,fontWeight:700,color:'#567043',marginBottom:6}}>{pendingPlant ? '請點一下花圃，決定今天種子的落點' : '今天的花圃'}</div>
+          <div style={{fontSize:12.5,color:'#7d8b71',lineHeight:1.75}}>
+            {hasPlantedToday ? '今天已經種下種子，明天回來就能開始澆水。' : todayCompleted ? '今天菜單已完成，可以把這顆種子種進花圃。' : '先把今天的菜單一路翻完，花園才會解鎖今日種子。'}
+          </div>
+        </div>
+        <div className="garden-plot" onClick={handlePlotClick} style={{position:'relative',height:'55vh',minHeight:360,overflowY:'auto',cursor:pendingPlant?'crosshair':'default',background:'linear-gradient(180deg, #dff2ff 0%, #f3fbff 34%, #d9f1cf 35%, #cfe8bf 100%)'}}>
+          <div className="garden-breeze" style={{position:'relative',minHeight:'100%',height:Math.max(420, 280 + plants.length * 32)}}>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{position:'absolute',left:0,right:0,bottom:0,width:'100%',height:'42%',pointerEvents:'none'}}>
+              <path d="M0 52 C 14 44, 27 58, 42 52 S 68 46, 100 56 L100 100 L0 100 Z" fill="#8B5E3C"/>
+              <path d="M0 60 C 18 52, 32 64, 50 58 S 77 52, 100 63 L100 100 L0 100 Z" fill="#7a5134" opacity="0.5"/>
+            </svg>
+            {Array.from({length:8}).map((_,i)=><div key={i} style={{position:'absolute',left:`${i*13}%`,top:18+i*8,width:56,height:12,borderRadius:'50%',background:'rgba(255,255,255,0.18)',filter:'blur(8px)'}} />)}
+            {plants.slice().sort((a,b)=>getDepthScale(a,plants).zIndex - getDepthScale(b,plants).zIndex).map(plant=><PlantSVG key={plant.id} plant={plant} allPlants={plants} />)}
+            {pendingPlant && <div style={{position:'absolute',left:'50%',top:'18%',transform:'translateX(-50%)',padding:'10px 14px',borderRadius:999,background:'rgba(255,255,255,0.9)',boxShadow:'0 8px 18px rgba(70,90,45,0.12)',fontSize:13,fontWeight:700,color:'#597043'}}>點花圃任一位置種下今日種子 🌱</div>}
+            {showButterfly && <div className="butterfly-loop" style={{position:'absolute',left:'18%',top:'28%',fontSize:22}}>🦋</div>}
+            {showBee && <div className="bee-loop" style={{position:'absolute',right:'14%',top:'24%',fontSize:22}}>🐝</div>}
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'flex',gap:8,marginBottom:12}}>
+        {!hasPlantedToday && !pendingPlant && todayCompleted && <button onClick={onBeginPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'none',background:'#5e9b47',color:'#fff',fontSize:14.5,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>種下今日的種子 🌱</button>}
+        {pendingPlant && <button onClick={onCancelPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'1.5px solid #d7dfcf',background:'#fff',color:'#738169',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>先取消</button>}
+        {!todayCompleted && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#f5f2eb',color:'#91897e',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天還沒完成菜單翻覽，先去菜單頁把今天這桌看完。</div>}
+        {hasPlantedToday && !pendingPlant && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#edf8e9',color:'#5a7746',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天已種下種子，明天可回來澆水。</div>}
+      </div>
+
+      <div className="recipe-paper" style={{borderRadius:18,padding:'13px 13px 10px'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,marginBottom:10}}>
+          <div style={{fontSize:15,fontWeight:700,color:'#5a6d4a'}}>需要照顧的植物</div>
+          <div style={{fontSize:12.5,color:'#97a08d'}}>今天可澆水 {waterablePlants.length} 株</div>
+        </div>
+        {plants.length===0 ? (
+          <div style={{fontSize:13.5,color:'#8a8a7a',lineHeight:1.9}}>花圃還是空的。把今天的菜單一步一步看完後，就能種下第一顆種子。</div>
+        ) : (
+          <div style={{display:'grid',gap:8}}>
+            {plants.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(plant=>{
+              const stage = getStage(plant);
+              const canWater = plantNeedsWater(plant);
+              return (
+                <div key={plant.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 11px',borderRadius:14,background:canWater?'#f5fbf1':'#faf8f4',border:`1px solid ${canWater?'#d4e8c8':'#ebe4d8'}`}}>
+                  <div style={{width:42,height:42,borderRadius:12,background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 10px rgba(0,0,0,0.04)',fontSize:20}}>{stage>=7?'🌸':stage>=5?'🌿':stage>=3?'🌱':'·'}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:14.5,fontWeight:700,color:'#5a4d3d'}}>{GARDEN_TYPE_LABELS[plant.type] || plant.type} · 第 {stage} 階段</div>
+                    <div style={{fontSize:12.5,color:'#8d8476',lineHeight:1.7}}>{plant.date} 種下 · 類別 {CATEGORY_LABELS[plant.category] || plant.category} · 已澆水 {plant.wateredCount} 次</div>
+                  </div>
+                  <button onClick={()=>onWater(plant.id)} disabled={!canWater} style={{padding:'9px 12px',borderRadius:12,border:'none',background:canWater?'#7cb8ff':'#e9edf3',color:canWater?'#fff':'#98a3b3',fontSize:13.5,fontWeight:700,cursor:canWater?'pointer':'default',fontFamily:"'Noto Sans TC'"}}>{canWater?'澆水 💧':plant.lastWatered===today?'今天澆過':'明天再來'}</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════
 function App(){
   const m=new Date().getMonth()+1;
@@ -1511,6 +1876,10 @@ function App(){
   const [uServing,  setUServing]  =useState(100);
   const [uCompare,  setUCompare]  =useState([]);
   const [uTab,      setUTab]      =useState("search");
+
+  const [gardenData,setGardenData]=useState(()=>loadGardenData());
+  const [gardenCompletion,setGardenCompletion]=useState(()=>loadCompletionMap());
+  const [pendingPlant,setPendingPlant]=useState(false);
 
   const sc=SEASONS[season];
   const compactHeader=!showIntro;
@@ -1578,6 +1947,12 @@ function App(){
     const t=window.setTimeout(()=>setSurplusPhase(1),80);
     return()=>window.clearTimeout(t);
   },[view]);
+  useEffect(()=>{
+    saveGardenData(gardenData);
+  },[gardenData]);
+  useEffect(()=>{
+    saveCompletionMap(gardenCompletion);
+  },[gardenCompletion]);
 
   // 為任意食材動態產生七天烹調方法（無預設方案時使用）
   const buildGenericMethods=(name)=>[
@@ -1816,9 +2191,72 @@ function App(){
   const showMenuInsights=menuStoryReady&&(showMenuOverview||menuStoryStep===menuStoryCards.length-1);
   const showMenuMetaControls=showMenuOverview||showMenuControls;
 
+  const selectedDayCategory=getTodayCategory(day?.dishes||[]);
+  const todayKey=todayISO();
+  const todayCompleted=Boolean(gardenCompletion[todayKey]);
+  const hasPlantedToday=gardenData.plants.some(p=>p.id===todayKey);
+  const gardenPlants=useMemo(()=>gardenData.plants.map(p=>{
+    const nextStage=getStage(p);
+    return {...p, stage:nextStage};
+  }),[gardenData]);
+
+  useEffect(()=>{
+    if(menuStoryReady && menuStoryStep===menuStoryCards.length-1){
+      markTodayCompleted();
+    }
+  },[menuStoryReady,menuStoryStep,menuStoryCards.length,todayKey]);
+
   const goMenuStory=(dir)=>{
     setMenuStoryMotion(dir>0?"forward":"backward");
     setMenuStoryStep(p=>Math.max(0,Math.min(menuStoryCards.length-1,p+dir)));
+  };
+
+  const persistGarden=(updater)=>{
+    setGardenData(prev=>{
+      const next=normalizeGardenData(typeof updater==='function'?updater(prev):updater);
+      saveGardenData(next);
+      return next;
+    });
+  };
+  const markTodayCompleted=()=>{
+    setGardenCompletion(prev=>{
+      if(prev[todayKey])return prev;
+      const next={...prev,[todayKey]:true};
+      saveCompletionMap(next);
+      return next;
+    });
+  };
+  const handleBeginPlant=()=>{
+    if(!todayCompleted||hasPlantedToday)return;
+    setPendingPlant(true);
+    setView('garden');
+  };
+  const handlePlantAt=(x,y)=>{
+    if(!todayCompleted||hasPlantedToday)return;
+    const date=todayISO();
+    const category=selectedDayCategory;
+    const type=getPlantType(category,date,gardenData.plants.length);
+    const variantCount=PLANT_VARIANTS[type]||1;
+    const variant=(getDayOfYear(date)+gardenData.plants.length)%variantCount;
+    const mood=getPlantMood(date);
+    persistGarden(prev=>({
+      ...prev,
+      plants:[...prev.plants,{id:date,date,type,variant,x,y,wateredCount:0,lastWatered:null,stage:1,mood,category,bloomedAt:null}]
+    }));
+    setPendingPlant(false);
+  };
+  const handleWater=(plantId)=>{
+    persistGarden(prev=>({
+      ...prev,
+      plants:prev.plants.map(p=>{
+        if(p.id!==plantId||!plantNeedsWater(p))return {...p, stage:getStage(p)};
+        const wateredCount=(p.wateredCount||0)+1;
+        const daysAlive=Math.max(0,daysBetween(p.date,todayISO()));
+        const bloomedAt=(wateredCount>=8 && p.bloomedAt==null) ? daysAlive : p.bloomedAt;
+        const next={...p,wateredCount,lastWatered:todayISO(),bloomedAt};
+        return {...next,stage:getStage(next)};
+      })
+    }));
   };
   const getSwitchCandidates=(baseDish,activeDish)=>{
     if(activeDish.isMissing)return[];
@@ -2535,6 +2973,18 @@ function App(){
           animation:iceFloat .6s cubic-bezier(.25,1,.5,1) forwards;
           text-shadow:0 0 22px rgba(120,200,255,0.8),0 0 8px #fff;
         }
+
+        @keyframes plantSway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+        .plant-bloomed{animation:plantSway 3s ease-in-out infinite;transform-origin:bottom center;}
+        @keyframes gentleBreeze { 0%,100%{transform:translateX(0);} 50%{transform:translateX(2px);} }
+        .garden-breeze{animation:gentleBreeze 6s ease-in-out infinite;}
+        @keyframes seedFloat { 0% { opacity:1; transform: translate(0,0) scale(1); } 100% { opacity:0; transform: translate(var(--dx), var(--dy)) scale(0.3); } }
+        .seed-float{position:absolute;color:#8b5e3c;font-size:14px;animation:seedFloat 2.4s ease-out forwards;pointer-events:none;}
+        @keyframes beeLoop{0%,100%{transform:translate(0,0)}25%{transform:translate(12px,-8px)}50%{transform:translate(22px,6px)}75%{transform:translate(8px,12px)}}
+        .bee-loop{animation:beeLoop 5s linear infinite;}
+        @keyframes butterflyLoop{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(16px,-10px) scale(1.06)}}
+        .butterfly-loop{animation:butterflyLoop 4.2s ease-in-out infinite;}
+
       `}</style>
 
       {showIntro&&(
@@ -2642,7 +3092,7 @@ function App(){
         boxShadow:"0 8px 28px rgba(100,75,50,0.18),0 0 0 1px rgba(200,180,160,0.25)",
         zIndex:50,
       }}>
-        {[["fridge","🧊","冰箱"],["menu","📋","菜單"],["usda","🔍","食材"]].map(([v,ico,lbl])=>(
+        {[["fridge","🧊","冰箱"],["menu","📋","菜單"],["usda","🔍","食材"],["garden","🌱","花園"]].map(([v,ico,lbl])=>(
           <button key={v} onClick={()=>setView(v)} style={{
             position:"relative",
             padding:"9px 20px",border:"none",cursor:"pointer",
@@ -2858,6 +3308,19 @@ function App(){
                 </>
               )}
             </>
+          )}
+
+
+          {todayCompleted&&(
+            <div className="recipe-paper" style={{borderRadius:15,padding:'14px 14px',marginBottom:12,background:'linear-gradient(180deg, #f7fff4, #f2fbef)',border:'1.5px solid #d7e8cd'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,flexWrap:'wrap'}}>
+                <div>
+                  <div style={{fontSize:15,fontWeight:700,color:'#55703f',marginBottom:5}}>今天這桌已完成，花園種子已解鎖</div>
+                  <div style={{fontSize:13,color:'#7b876e',lineHeight:1.7}}>{hasPlantedToday?'今天已經種下了。':'去花園把今天的種子種進花圃吧。'}</div>
+                </div>
+                <button onClick={()=>hasPlantedToday?setView('garden'):handleBeginPlant()} style={{padding:'11px 14px',borderRadius:12,background:'#5e9b47',color:'#fff',fontSize:14,fontWeight:700,border:'none',cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>{hasPlantedToday?'查看花園 🌿':'種下今日的種子 🌱'}</button>
+              </div>
+            </div>
           )}
 
           {/* Missing ingredients - collapsible */}
@@ -3341,6 +3804,22 @@ function App(){
       )}
 
       {/* ════ USDA VIEW ════ */}
+
+      {view==="garden"&&(
+        <GardenView
+          plants={gardenPlants}
+          gardenData={gardenData}
+          canPlantToday={todayCompleted&&!hasPlantedToday}
+          hasPlantedToday={hasPlantedToday}
+          pendingPlant={pendingPlant}
+          todayCompleted={todayCompleted}
+          onBeginPlant={handleBeginPlant}
+          onCancelPlant={()=>setPendingPlant(false)}
+          onPlantAt={handlePlantAt}
+          onWater={handleWater}
+        />
+      )}
+
       {view==="usda"&&(
         <div style={{padding:"13px 13px 30px"}}>
           <div style={{background:"#2d5a1a",borderRadius:13,padding:"12px 14px",marginBottom:12,color:"#fff"}}>
