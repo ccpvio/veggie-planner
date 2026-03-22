@@ -1470,6 +1470,7 @@ function calcDayNutrition(dishes,soup){
 // ── Garden reward system ─────────────────────────────────
 const GARDEN_KEY = "veggie_garden";
 const GARDEN_COMPLETION_KEY = "veggie_garden_completion";
+const GARDEN_SEED_LIMIT_PER_DAY = 2;
 const GARDEN_SEASON_DAYS = 14 * 7;
 const SEASON_POOL = {
   spring: { months: [3,4,5], bonus: ['mint','beansprout','tomato'] },
@@ -1497,11 +1498,15 @@ function todayISO(){
 function safeParse(json, fallback){
   try{return json?JSON.parse(json):fallback;}catch(e){return fallback;}
 }
+function normalizeCompletionMap(map){
+  const raw = map && typeof map === 'object' ? map : {};
+  return Object.fromEntries(Object.entries(raw).map(([k,v])=>[k, Math.max(0, Math.min(GARDEN_SEED_LIMIT_PER_DAY, typeof v === 'boolean' ? (v ? 1 : 0) : Number(v) || 0))]));
+}
 function loadCompletionMap(){
-  try{return safeParse(localStorage.getItem(GARDEN_COMPLETION_KEY),{});}catch(e){return {};}
+  try{return normalizeCompletionMap(safeParse(localStorage.getItem(GARDEN_COMPLETION_KEY),{}));}catch(e){return {};}
 }
 function saveCompletionMap(map){
-  try{localStorage.setItem(GARDEN_COMPLETION_KEY, JSON.stringify(map));}catch(e){}
+  try{localStorage.setItem(GARDEN_COMPLETION_KEY, JSON.stringify(normalizeCompletionMap(map)));}catch(e){}
 }
 function daysBetween(a,b){
   const da = new Date(a+'T00:00:00');
@@ -1595,6 +1600,34 @@ function getPlantType(category, dateISO, plantCount){
 function getPlantMood(dateISO){
   const n = getDayOfYear(dateISO) % 3;
   return n===0 ? 'sunny' : n===1 ? 'cloudy' : 'rainy';
+}
+function getTimeSegment(date=new Date()){
+  const h = date.getHours();
+  if(h >= 5 && h < 7) return 'sunrise';
+  if(h >= 7 && h < 17) return 'day';
+  if(h >= 17 && h < 19) return 'evening';
+  return 'night';
+}
+function getGardenWeather(dateISO=todayISO()){
+  return ['sunny','partlyCloudy','cloudy','rainy','breezy'][getDayOfYear(dateISO) % 5];
+}
+function getGardenScene(date=new Date()){
+  const timeSegment = getTimeSegment(date);
+  const weather = getGardenWeather(todayISO());
+  const byTime = {
+    sunrise: { label:'日出', sky:'linear-gradient(180deg, #ffd6b6 0%, #ffe9cf 24%, #dff2ff 55%, #d8efcf 100%)', haze:'rgba(255,255,255,0.22)', hill:'#dceccf', ground:'#cfe8bf' },
+    day: { label:'白天', sky:'linear-gradient(180deg, #bfe6ff 0%, #effaff 34%, #d9f1cf 35%, #cfe8bf 100%)', haze:'rgba(255,255,255,0.18)', hill:'#daf0d1', ground:'#cfe8bf' },
+    evening: { label:'傍晚', sky:'linear-gradient(180deg, #ffd1af 0%, #f5d4e9 30%, #d9e8ff 58%, #d4ebc2 100%)', haze:'rgba(255,244,230,0.18)', hill:'#d9e6c8', ground:'#c6ddb3' },
+    night: { label:'晚上', sky:'linear-gradient(180deg, #1f3158 0%, #2f4675 34%, #6e8aa3 58%, #b8d5b3 100%)', haze:'rgba(255,255,255,0.08)', hill:'#a7c3a0', ground:'#abc89d' },
+  };
+  const weatherMap = {
+    sunny:{ label:'晴天', overlay:'rgba(255,220,140,0.13)', emoji:'☀️' },
+    partlyCloudy:{ label:'多雲', overlay:'rgba(255,255,255,0.12)', emoji:'⛅' },
+    cloudy:{ label:'陰天', overlay:'rgba(210,220,230,0.18)', emoji:'☁️' },
+    rainy:{ label:'下雨', overlay:'rgba(130,160,200,0.16)', emoji:'🌧️' },
+    breezy:{ label:'微風', overlay:'rgba(230,245,255,0.10)', emoji:'🍃' },
+  };
+  return { timeSegment, weather, ...(byTime[timeSegment] || byTime.day), weatherMeta: weatherMap[weather] || weatherMap.sunny };
 }
 function getStage(plant){
   const w = plant.wateredCount || 0;
@@ -1738,7 +1771,7 @@ function PlantSVG({ plant, allPlants }){
     </div>
   );
 }
-function GardenView({ plants, gardenData, canPlantToday, hasPlantedToday, pendingPlant, todayCompleted, onBeginPlant, onCancelPlant, onPlantAt, onWater }){
+function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, confirmedTodayCount, pendingPlant, onBeginPlant, onCancelPlant, onPlantAt, onWater }){
   const today = todayISO();
   const month = new Date(today+'T00:00:00').getMonth()+1;
   const seasonKey = getSeasonNameByMonth(month);
@@ -1748,6 +1781,7 @@ function GardenView({ plants, gardenData, canPlantToday, hasPlantedToday, pendin
   const longestWaterStreak = plants.reduce((m,p)=>Math.max(m, Number(p.wateredCount)||0),0);
   const showButterfly = longestWaterStreak >= 7;
   const showBee = bloomedCount >= 10;
+  const scene = getGardenScene();
   const handlePlotClick = (e)=>{
     if(!pendingPlant) return;
     const rect = e.currentTarget.getBoundingClientRect();
@@ -1756,17 +1790,22 @@ function GardenView({ plants, gardenData, canPlantToday, hasPlantedToday, pendin
     onPlantAt(x,y);
   };
   return (
-    <div style={{padding:'12px 12px 100px',background:'linear-gradient(180deg, #f5fbf2 0%, #eef7ea 100%)'}}>
+    <div style={{padding:'12px 12px 100px',background:'linear-gradient(180deg, #f4faf1 0%, #edf6e8 100%)'}}>
       <div className="recipe-paper" style={{borderRadius:18,padding:'14px 14px 12px',marginBottom:12,background:'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,252,244,0.96))'}}>
         <div style={{display:'flex',justifyContent:'space-between',gap:10,alignItems:'flex-start'}}>
           <div>
             <div className="journal-kicker" style={{marginBottom:8}}>第 {gardenData.season} 季 · {seasonLabel}</div>
             <div className="warm-script" style={{fontSize:34,lineHeight:1.12,color:'#3f4d2d',marginBottom:6}}>已陪你 {daysBetween(gardenData.seasonStart, today)+1} 天</div>
             <div style={{fontSize:14,color:'#6d7b60',lineHeight:1.8}}>花圃不分週次，會一直長成屬於你的整片菜園。</div>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}>
+              <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>{scene.weatherMeta.emoji} {scene.label}</span>
+              <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>{scene.weatherMeta.emoji} {scene.weatherMeta.label}</span>
+            </div>
           </div>
           <div style={{textAlign:'right',fontSize:13,color:'#7a866d',lineHeight:1.8,whiteSpace:'nowrap'}}>
             <div>🌸 盛開 {bloomedCount} 株</div>
-            <div>🌱 種子 {plants.length} 顆</div>
+            <div>🌱 已種 {plants.length} 顆</div>
+            <div>🎁 今日可種 {availableSeeds} 顆</div>
           </div>
         </div>
       </div>
@@ -1775,16 +1814,25 @@ function GardenView({ plants, gardenData, canPlantToday, hasPlantedToday, pendin
         <div style={{padding:'12px 14px',borderBottom:'1px solid rgba(125,147,108,0.16)',background:'linear-gradient(180deg, #f5fbf1 0%, #eef7ea 100%)'}}>
           <div style={{fontSize:14,fontWeight:700,color:'#567043',marginBottom:6}}>{pendingPlant ? '請點一下花圃，決定今天種子的落點' : '今天的花圃'}</div>
           <div style={{fontSize:12.5,color:'#7d8b71',lineHeight:1.75}}>
-            {hasPlantedToday ? '今天已經種下種子，明天回來就能開始澆水。' : todayCompleted ? '今天菜單已完成，可以把這顆種子種進花圃。' : '先把今天的菜單一路翻完，花園才會解鎖今日種子。'}
+            {availableSeeds>0 ? `今天已確認 ${confirmedTodayCount}/${GARDEN_SEED_LIMIT_PER_DAY} 套菜單，還可以種 ${availableSeeds} 顆種子。` : confirmedTodayCount>0 ? '今天的種子額度已用完，明天再來。' : '先把今天這桌看完，再按「今天決定做這桌菜 🌱」解鎖種子。'}
           </div>
         </div>
-        <div className="garden-plot" onClick={handlePlotClick} style={{position:'relative',height:'55vh',minHeight:360,overflowY:'auto',cursor:pendingPlant?'crosshair':'default',background:'linear-gradient(180deg, #dff2ff 0%, #f3fbff 34%, #d9f1cf 35%, #cfe8bf 100%)'}}>
+        <div className="garden-plot" onClick={handlePlotClick} style={{position:'relative',height:'55vh',minHeight:360,overflowY:'auto',cursor:pendingPlant?'crosshair':'default',background:scene.sky}}>
           <div className="garden-breeze" style={{position:'relative',minHeight:'100%',height:Math.max(420, 280 + plants.length * 32)}}>
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{position:'absolute',left:0,right:0,bottom:0,width:'100%',height:'42%',pointerEvents:'none'}}>
               <path d="M0 52 C 14 44, 27 58, 42 52 S 68 46, 100 56 L100 100 L0 100 Z" fill="#8B5E3C"/>
               <path d="M0 60 C 18 52, 32 64, 50 58 S 77 52, 100 63 L100 100 L0 100 Z" fill="#7a5134" opacity="0.5"/>
             </svg>
-            {Array.from({length:8}).map((_,i)=><div key={i} style={{position:'absolute',left:`${i*13}%`,top:18+i*8,width:56,height:12,borderRadius:'50%',background:'rgba(255,255,255,0.18)',filter:'blur(8px)'}} />)}
+            <div style={{position:'absolute',inset:0,background:scene.weatherMeta.overlay,pointerEvents:'none'}} />
+            {Array.from({length:8}).map((_,i)=><div key={i} style={{position:'absolute',left:`${i*13}%`,top:18+i*8,width:56,height:12,borderRadius:'50%',background:scene.haze,filter:'blur(8px)'}} />)}
+            {scene.timeSegment==='sunrise' && <div style={{position:'absolute',right:'9%',top:'10%',fontSize:34,opacity:0.75}}>🌅</div>}
+            {scene.timeSegment==='day' && <div style={{position:'absolute',right:'10%',top:'9%',fontSize:34,opacity:0.8}}>☀️</div>}
+            {scene.timeSegment==='evening' && <div style={{position:'absolute',right:'9%',top:'10%',fontSize:32,opacity:0.72}}>🌇</div>}
+            {scene.timeSegment==='night' && <div style={{position:'absolute',right:'10%',top:'9%',fontSize:34,opacity:0.78}}>🌙</div>}
+            {scene.weather==='partlyCloudy' && <div style={{position:'absolute',left:'12%',top:'13%',fontSize:28,opacity:0.78}}>⛅</div>}
+            {scene.weather==='cloudy' && <><div style={{position:'absolute',left:'12%',top:'14%',fontSize:28,opacity:0.78}}>☁️</div><div style={{position:'absolute',left:'27%',top:'10%',fontSize:24,opacity:0.62}}>☁️</div></>}
+            {scene.weather==='rainy' && <div style={{position:'absolute',left:'11%',top:'12%',fontSize:28,opacity:0.84}}>🌧️</div>}
+            {scene.weather==='breezy' && <div style={{position:'absolute',left:'11%',top:'13%',fontSize:26,opacity:0.78}}>🍃</div>}
             {plants.slice().sort((a,b)=>getDepthScale(a,plants).zIndex - getDepthScale(b,plants).zIndex).map(plant=><PlantSVG key={plant.id} plant={plant} allPlants={plants} />)}
             {pendingPlant && <div style={{position:'absolute',left:'50%',top:'18%',transform:'translateX(-50%)',padding:'10px 14px',borderRadius:999,background:'rgba(255,255,255,0.9)',boxShadow:'0 8px 18px rgba(70,90,45,0.12)',fontSize:13,fontWeight:700,color:'#597043'}}>點花圃任一位置種下今日種子 🌱</div>}
             {showButterfly && <div className="butterfly-loop" style={{position:'absolute',left:'18%',top:'28%',fontSize:22}}>🦋</div>}
@@ -1794,10 +1842,10 @@ function GardenView({ plants, gardenData, canPlantToday, hasPlantedToday, pendin
       </div>
 
       <div style={{display:'flex',gap:8,marginBottom:12}}>
-        {!hasPlantedToday && !pendingPlant && todayCompleted && <button onClick={onBeginPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'none',background:'#5e9b47',color:'#fff',fontSize:14.5,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>種下今日的種子 🌱</button>}
+        {availableSeeds>0 && !pendingPlant && <button onClick={onBeginPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'none',background:'#5e9b47',color:'#fff',fontSize:14.5,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>種下今日的種子 🌱</button>}
         {pendingPlant && <button onClick={onCancelPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'1.5px solid #d7dfcf',background:'#fff',color:'#738169',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>先取消</button>}
-        {!todayCompleted && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#f5f2eb',color:'#91897e',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天還沒完成菜單翻覽，先去菜單頁把今天這桌看完。</div>}
-        {hasPlantedToday && !pendingPlant && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#edf8e9',color:'#5a7746',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天已種下種子，明天可回來澆水。</div>}
+        {availableSeeds===0 && confirmedTodayCount===0 && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#f5f2eb',color:'#91897e',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天還沒確認菜單，先把今天這桌看完，再按「今天決定做這桌菜 🌱」。</div>}
+        {availableSeeds===0 && confirmedTodayCount>0 && !pendingPlant && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#edf8e9',color:'#5a7746',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天兩顆種子都已經種下，明天再來解鎖新的種子。</div>}
       </div>
 
       <div className="recipe-paper" style={{borderRadius:18,padding:'13px 13px 10px'}}>
@@ -1806,7 +1854,7 @@ function GardenView({ plants, gardenData, canPlantToday, hasPlantedToday, pendin
           <div style={{fontSize:12.5,color:'#97a08d'}}>今天可澆水 {waterablePlants.length} 株</div>
         </div>
         {plants.length===0 ? (
-          <div style={{fontSize:13.5,color:'#8a8a7a',lineHeight:1.9}}>花圃還是空的。把今天的菜單一步一步看完後，就能種下第一顆種子。</div>
+          <div style={{fontSize:13.5,color:'#8a8a7a',lineHeight:1.9}}>花圃還是空的。把今天這桌看完後，按「今天決定做這桌菜 🌱」就能種下第一顆種子。</div>
         ) : (
           <div style={{display:'grid',gap:8}}>
             {plants.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(plant=>{
@@ -2193,18 +2241,14 @@ function App(){
 
   const selectedDayCategory=getTodayCategory(day?.dishes||[]);
   const todayKey=todayISO();
-  const todayCompleted=Boolean(gardenCompletion[todayKey]);
-  const hasPlantedToday=gardenData.plants.some(p=>p.id===todayKey);
+  const confirmedTodayCount=Math.max(0, Math.min(GARDEN_SEED_LIMIT_PER_DAY, Number(gardenCompletion[todayKey]) || 0));
+  const plantedTodayCount=gardenData.plants.filter(p=>p.date===todayKey).length;
+  const availableSeeds=Math.max(0, confirmedTodayCount - plantedTodayCount);
+  const menuStoryFinished=menuStoryReady && menuStoryStep===menuStoryCards.length-1;
   const gardenPlants=useMemo(()=>gardenData.plants.map(p=>{
     const nextStage=getStage(p);
     return {...p, stage:nextStage};
   }),[gardenData]);
-
-  useEffect(()=>{
-    if(menuStoryReady && menuStoryStep===menuStoryCards.length-1){
-      markTodayCompleted();
-    }
-  },[menuStoryReady,menuStoryStep,menuStoryCards.length,todayKey]);
 
   const goMenuStory=(dir)=>{
     setMenuStoryMotion(dir>0?"forward":"backward");
@@ -2218,21 +2262,23 @@ function App(){
       return next;
     });
   };
-  const markTodayCompleted=()=>{
+  const confirmTodayMenu=()=>{
+    if(!menuStoryFinished) return;
     setGardenCompletion(prev=>{
-      if(prev[todayKey])return prev;
-      const next={...prev,[todayKey]:true};
+      const current=Math.max(0, Math.min(GARDEN_SEED_LIMIT_PER_DAY, Number(prev[todayKey]) || 0));
+      if(current >= GARDEN_SEED_LIMIT_PER_DAY) return prev;
+      const next={...prev,[todayKey]:current+1};
       saveCompletionMap(next);
       return next;
     });
   };
   const handleBeginPlant=()=>{
-    if(!todayCompleted||hasPlantedToday)return;
+    if(availableSeeds<=0)return;
     setPendingPlant(true);
     setView('garden');
   };
   const handlePlantAt=(x,y)=>{
-    if(!todayCompleted||hasPlantedToday)return;
+    if(availableSeeds<=0)return;
     const date=todayISO();
     const category=selectedDayCategory;
     const type=getPlantType(category,date,gardenData.plants.length);
@@ -2241,7 +2287,7 @@ function App(){
     const mood=getPlantMood(date);
     persistGarden(prev=>({
       ...prev,
-      plants:[...prev.plants,{id:date,date,type,variant,x,y,wateredCount:0,lastWatered:null,stage:1,mood,category,bloomedAt:null}]
+      plants:[...prev.plants,{id:`${date}-${prev.plants.filter(p=>p.date===date).length+1}`,date,type,variant,x,y,wateredCount:0,lastWatered:null,stage:1,mood,category,bloomedAt:null}]
     }));
     setPendingPlant(false);
   };
@@ -3287,6 +3333,12 @@ function App(){
                     {menuStoryStep===menuStoryCards.length-1?"今天這桌看完了":"下一道"}
                   </button>
                 </div>
+                {menuStoryFinished&&(
+                  <div style={{display:'grid',gap:8,marginTop:10}}>
+                    <button onClick={confirmTodayMenu} disabled={confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY} style={{padding:'12px 14px',borderRadius:12,background:confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'#eef1e8':'#5e9b47',color:confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'#9aa38d':'#fff',fontSize:14.5,fontWeight:700,border:'none',cursor:confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'default':'pointer',fontFamily:"'Noto Sans TC'"}}>今天決定做這桌菜 🌱</button>
+                    <div style={{padding:'10px 12px',borderRadius:12,background:'#f8f5ef',fontSize:12.8,color:'#817866',lineHeight:1.75}}>{confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'今天已確認 2/2 套菜單，明天再來。':`今天已確認 ${confirmedTodayCount}/2 套，確認後可解鎖第 ${Math.min(2, confirmedTodayCount+1)} 顆種子。`}</div>
+                  </div>
+                )}
               </div>
 
               {!showMenuOverview&&(
@@ -3311,14 +3363,14 @@ function App(){
           )}
 
 
-          {todayCompleted&&(
+          {(confirmedTodayCount>0||menuStoryFinished)&&(
             <div className="recipe-paper" style={{borderRadius:15,padding:'14px 14px',marginBottom:12,background:'linear-gradient(180deg, #f7fff4, #f2fbef)',border:'1.5px solid #d7e8cd'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,flexWrap:'wrap'}}>
                 <div>
-                  <div style={{fontSize:15,fontWeight:700,color:'#55703f',marginBottom:5}}>今天這桌已完成，花園種子已解鎖</div>
-                  <div style={{fontSize:13,color:'#7b876e',lineHeight:1.7}}>{hasPlantedToday?'今天已經種下了。':'去花園把今天的種子種進花圃吧。'}</div>
+                  <div style={{fontSize:15,fontWeight:700,color:'#55703f',marginBottom:5}}>{confirmedTodayCount>0?`今天已確認 ${confirmedTodayCount}/2 套菜單`:'這桌已看完，可以決定是否採用'}</div>
+                  <div style={{fontSize:13,color:'#7b876e',lineHeight:1.7}}>{availableSeeds>0?`花園目前還有 ${availableSeeds} 顆今日種子可種。`:confirmedTodayCount>0?'今天的種子都種下了。':'按「今天決定做這桌菜 🌱」後，才會解鎖種子。'}</div>
                 </div>
-                <button onClick={()=>hasPlantedToday?setView('garden'):handleBeginPlant()} style={{padding:'11px 14px',borderRadius:12,background:'#5e9b47',color:'#fff',fontSize:14,fontWeight:700,border:'none',cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>{hasPlantedToday?'查看花園 🌿':'種下今日的種子 🌱'}</button>
+                <button onClick={()=>setView('garden')} style={{padding:'11px 14px',borderRadius:12,background:'#5e9b47',color:'#fff',fontSize:14,fontWeight:700,border:'none',cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>查看花園 🌿</button>
               </div>
             </div>
           )}
@@ -3809,10 +3861,10 @@ function App(){
         <GardenView
           plants={gardenPlants}
           gardenData={gardenData}
-          canPlantToday={todayCompleted&&!hasPlantedToday}
-          hasPlantedToday={hasPlantedToday}
+          availableSeeds={availableSeeds}
+          plantedTodayCount={plantedTodayCount}
+          confirmedTodayCount={confirmedTodayCount}
           pendingPlant={pendingPlant}
-          todayCompleted={todayCompleted}
           onBeginPlant={handleBeginPlant}
           onCancelPlant={()=>setPendingPlant(false)}
           onPlantAt={handlePlantAt}
