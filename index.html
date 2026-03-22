@@ -48,7 +48,7 @@ const QUICK_FOODS=[
   {zh:"菠菜",en:"spinach raw",e:"🥬"},{zh:"A菜",en:"lettuce raw",e:"🥬"},
   {zh:"空心菜",en:"water spinach",e:"🥬"},{zh:"地瓜葉",en:"sweet potato leaves",e:"🍃"},
   {zh:"莧菜",en:"amaranth leaves",e:"🥬"},{zh:"油菜",en:"bok choy raw",e:"🥬"},
-  {zh:"青江菜",en:"pak choi raw",e:"🥬"},{zh:"大白菜",en:"napa cabbage raw",e:"🥬"},
+  {zh:"青江菜",en:"pak choi raw",e:"🥬"},{zh:"小松菜",en:"komatsuna raw",e:"🥬"},{zh:"小白菜",en:"baby bok choy raw",e:"🥬"},{zh:"大白菜",en:"napa cabbage raw",e:"🥬"},
   {zh:"芥菜",en:"mustard greens raw",e:"🌱"},{zh:"豌豆苗",en:"pea shoots raw",e:"🌿"},
   // 蔬菜類
   {zh:"青花菜",en:"broccoli raw",e:"🥦"},{zh:"白花椰菜",en:"cauliflower raw",e:"🤍"},
@@ -174,6 +174,27 @@ const SURPLUS={
       {name:"油菜炒豆干",how:"炒製",icon:"🟫",ingredients:["油菜","五香豆干 3片","醬油少許"],note:"雙鈣一盤"},
       {name:"油菜味噌湯",how:"煮湯",icon:"🍵",ingredients:["油菜","嫩豆腐 半盒","味噌 1.5匙"],note:"益生菌加分"},
     ]},
+  小松菜:{icon:"🥬",color:"#4caf50",bg:"#eaf7ea",border:"#9ccc65",replaces:"葉菜",desc:"鈣與維生素C都不錯，口感清脆帶嫩葉香",
+    methods:[
+      {name:"清炒小松菜",how:"快炒",icon:"🥬",ingredients:["小松菜","橄欖油","鹽"],note:"快炒保留脆度；家常最好上手"},
+      {name:"小松菜炒蛋",how:"炒製",icon:"🍳",ingredients:["小松菜","雞蛋 2顆","鹽","黑胡椒"],note:"蛋白質一起補；顏色也更討喜"},
+      {name:"小松菜豆腐湯",how:"煮湯",icon:"🍲",ingredients:["小松菜","嫩豆腐 半盒","鹽","香油"],note:"柔嫩清爽；適合晚餐湯品"},
+      {name:"麻醬小松菜",how:"燙拌",icon:"🌿",ingredients:["小松菜","芝麻醬 1匙","醬油","烏醋"],note:"芝麻補鈣；冷熱都好吃"},
+      {name:"小松菜炒豆干",how:"炒製",icon:"🟫",ingredients:["小松菜","五香豆干 3片","醬油少許"],note:"高鈣高蛋白；當主菜也夠撐"},
+      {name:"胡麻小松菜",how:"拌製",icon:"🌿",ingredients:["小松菜","芝麻醬 1匙","醬油少許"],note:"胡麻香氣溫和；冷熱都適合"},
+      {name:"小松菜燴菇",how:"燴製",icon:"🍄",ingredients:["小松菜","香菇 2朵","醬油少許"],note:"菇香帶鮮；更有主菜感"},
+      {name:"小松菜奶香烘蛋",how:"烘製",icon:"🧀",ingredients:["小松菜","雞蛋 2顆","鮮奶 50ml","起司絲 少許"],note:"奶香柔和；早餐晚餐都合適"},
+      {name:"小松菜蒸蛋",how:"蒸製",icon:"🥚",ingredients:["小松菜（切末）","雞蛋 3顆","醬油膏"],note:"蒸蛋口感滑順；很適合不想炒太多油時"},
+    ]},
+  小白菜:{icon:"🥬",color:"#8bc34a",bg:"#f1f8e9",border:"#c5e1a5",replaces:"葉菜",desc:"葉梗嫩甜，清炒煮湯都很柔和",
+    methods:[
+      {name:"清炒小白菜",how:"快炒",icon:"🥬",ingredients:["小白菜","橄欖油","鹽"],note:"菜梗脆嫩；最能吃出清甜"},
+      {name:"小白菜炒蛋",how:"炒製",icon:"🍳",ingredients:["小白菜","雞蛋 2顆","鹽","黑胡椒"],note:"家常耐吃；早餐晚餐都合適"},
+      {name:"小白菜豆腐湯",how:"煮湯",icon:"🍲",ingredients:["小白菜","板豆腐 半塊","鹽","香油"],note:"柔嫩順口；很適合清爽湯品"},
+      {name:"麻醬小白菜",how:"燙拌",icon:"🌿",ingredients:["小白菜","芝麻醬 1匙","醬油","烏醋"],note:"芝麻香能把菜味拉得更圓潤"},
+      {name:"小白菜燴菇",how:"燴製",icon:"🍄",ingredients:["小白菜","香菇 3朵","鹽","醬油少許"],note:"菇香加進來更像完整一道菜"},
+            {name:"小白菜蒸蛋",how:"蒸製",icon:"🥚",ingredients:["小白菜（切末）","雞蛋 3顆","醬油膏"],note:"蒸蛋更嫩；很適合小朋友與長輩"},
+    ]},
   高麗菜:{icon:"🥬",color:"#43a047",bg:"#e8f5e9",border:"#a5d6a7",replaces:"葉菜",desc:"維C豐富，夏冬兩季最甜脆",
     methods:[
       {name:"清炒高麗菜",how:"快炒",icon:"🥬",ingredients:["高麗菜","橄欖油","鹽"],note:"維C豐富；甜脆清爽"},
@@ -182,7 +203,8 @@ const SURPLUS={
       {name:"涼拌高麗菜",how:"涼拌",icon:"🥗",ingredients:["高麗菜","烏醋 1匙","鹽","香油"],note:"醋醃保留維C"},
       {name:"高麗菜蒸蛋",how:"蒸製",icon:"🥚",ingredients:["高麗菜（切絲）","雞蛋 3顆","醬油膏"],note:"清蒸鮮甜"},
       {name:"高麗菜起司烘烤",how:"烤製",icon:"🧀",ingredients:["高麗菜","起司絲少許","黑胡椒"],note:"烤後焦香提鮮"},
-      {name:"高麗菜味噌湯",how:"煮湯",icon:"🍵",ingredients:["高麗菜","嫩豆腐 半盒","味噌 1.5匙"],note:"甘甜味噌湯"},
+      {name:"高麗菜味噌湯",how:"煮湯",icon:"🍵",ingredients:["高麗菜","嫩豆腐 半盒","味噌 1.5匙"],note:"甘甜味噌湯"},,
+      {name:"咖哩炒高麗菜",how:"燴煮",icon:"🍛",ingredients:["高麗菜 四分之一顆","咖哩粉 1匙","鹽","橄欖油"],note:"高麗菜甜味很適合乾香咖哩；清爽耐吃"}
     ]},
   // ── 蔬菜類 ──
   白花椰菜:{icon:"🤍",color:"#1565c0",bg:"#e3f2fd",border:"#90caf9",replaces:"其他蔬菜",desc:"十字花科蘿蔔硫素防癌，冬季最當令",
@@ -193,7 +215,8 @@ const SURPLUS={
       {name:"花椰菜炒蛋",how:"炒製",icon:"🍳",ingredients:["白花椰菜","雞蛋 2顆","鹽","芹菜末"],note:"蛋白質補充；切小朵快熟"},
       {name:"醋溜花椰菜",how:"炒製",icon:"🥢",ingredients:["白花椰菜","烏醋 1匙","糖少許","鹽"],note:"醋讓礦物質更好吸收"},
       {name:"花椰菜濃湯",how:"煮湯",icon:"🍵",ingredients:["白花椰菜","鮮奶 150ml","奶油 5g","鹽","黑胡椒"],note:"鮮奶補鈣；濃湯不膩"},
-      {name:"花椰菜豆腐煮",how:"燴煮",icon:"🫕",ingredients:["白花椰菜","板豆腐 半塊","醬油","薑黃粉少許"],note:"薑黃提色；週日溫補"},
+      {name:"花椰菜豆腐煮",how:"燴煮",icon:"🫕",ingredients:["白花椰菜","板豆腐 半塊","醬油","薑黃粉少許"],note:"薑黃提色；週日溫補"},,
+      {name:"乾香咖哩花椰菜",how:"燴煮",icon:"🍛",ingredients:["白花椰菜 半顆","咖哩粉 1匙","鹽","橄欖油"],note:"十字花科很適合乾香咖哩；越嚼越香"}
     ]},
   青花菜:{icon:"🥦",color:"#2e7d32",bg:"#e8f5e9",border:"#81c784",replaces:"其他蔬菜",desc:"蘿蔔硫素防癌，維C豐富",
     methods:[
@@ -203,7 +226,8 @@ const SURPLUS={
       {name:"青花菜豆腐湯",how:"煮湯",icon:"🍲",ingredients:["青花菜","板豆腐 半塊","鹽","香油"],note:"維C＋鈣"},
       {name:"涼拌青花菜",how:"燙拌",icon:"🥗",ingredients:["青花菜","烏醋 1匙","醬油","香油"],note:"燙後涼拌保維C"},
       {name:"青花菜起司烤",how:"烤製",icon:"🧀",ingredients:["青花菜","起司絲少許","黑胡椒","奶油"],note:"焗烤香濃補鈣"},
-      {name:"青花菜蒸蛋",how:"蒸製",icon:"🥚",ingredients:["青花菜（切末）","雞蛋 3顆","醬油膏"],note:"清蒸補鈣"},
+      {name:"青花菜蒸蛋",how:"蒸製",icon:"🥚",ingredients:["青花菜（切末）","雞蛋 3顆","醬油膏"],note:"清蒸補鈣"},,
+      {name:"咖哩炒青花菜",how:"炒製",icon:"🍛",ingredients:["青花菜 半顆","咖哩粉 1匙","鹽","橄欖油"],note:"青花菜很適合乾香咖哩；清爽不厚重"}
     ]},
   番茄:{icon:"🍅",color:"#c62828",bg:"#fce4ec",border:"#f48fb1",replaces:"其他蔬菜",desc:"茄紅素加熱後更好吸收，四季皆有",
     methods:[
@@ -213,7 +237,8 @@ const SURPLUS={
       {name:"番茄烘蛋",how:"烤製",icon:"🥚",ingredients:["番茄 2顆","雞蛋 4顆","鹽","九層塔少許"],note:"四顆蛋蛋白足"},
       {name:"番茄涼拌豆腐",how:"涼拌",icon:"⬜",ingredients:["番茄 1顆","嫩豆腐 半盒","醬油膏","香油"],note:"夏日清爽；無需開火"},
       {name:"番茄燴花椰菜",how:"燴製",icon:"🥦",ingredients:["番茄 2顆","青花菜 半顆","醬油少許","糖少許"],note:"雙蔬抗氧化"},
-      {name:"番茄豆干炒",how:"炒製",icon:"🟫",ingredients:["番茄 2顆","五香豆干 4片","醬油少許","糖少許"],note:"茄紅素＋高鈣豆干"},
+      {name:"番茄豆干炒",how:"炒製",icon:"🟫",ingredients:["番茄 2顆","五香豆干 4片","醬油少許","糖少許"],note:"茄紅素＋高鈣豆干"},,
+      {name:"番茄咖哩豆腐",how:"燴製",icon:"🍛",ingredients:["番茄 2顆","板豆腐 1塊","咖哩粉 1匙","鮮奶 80ml","鹽"],note:"番茄酸香讓咖哩更清爽"}
     ]},
   紅蘿蔔:{icon:"🥕",color:"#e64a19",bg:"#fce4ec",border:"#ef9a9a",replaces:"其他蔬菜",desc:"β-胡蘿蔔素護眼，油脂加倍吸收",
     methods:[
@@ -223,7 +248,8 @@ const SURPLUS={
       {name:"紅蘿蔔炒豆干",how:"炒製",icon:"🟫",ingredients:["紅蘿蔔","五香豆干 4片","醬油少許"],note:"高鈣炒蔬菜"},
       {name:"紅蘿蔔燉豆腐",how:"燉煮",icon:"🫕",ingredients:["紅蘿蔔","板豆腐 1塊","醬油 1匙","薑黃粉"],note:"薑黃抗炎"},
       {name:"涼拌紅蘿蔔絲",how:"涼拌",icon:"🥗",ingredients:["紅蘿蔔","烏醋 1匙","鹽","香油"],note:"醋保留胡蘿蔔素"},
-      {name:"紅蘿蔔蒸蛋",how:"蒸製",icon:"🥚",ingredients:["紅蘿蔔（刨絲）","雞蛋 3顆","醬油膏"],note:"清蒸鮮甜"},
+      {name:"紅蘿蔔蒸蛋",how:"蒸製",icon:"🥚",ingredients:["紅蘿蔔（刨絲）","雞蛋 3顆","醬油膏"],note:"清蒸鮮甜"},,
+      {name:"咖哩燒紅蘿蔔",how:"燉煮",icon:"🍛",ingredients:["紅蘿蔔 1條","咖哩粉 1匙","鹽","橄欖油"],note:"紅蘿蔔甜味很適合咖哩；可當配菜或配飯"}
     ]},
   南瓜:{icon:"🎃",color:"#e65100",bg:"#fff3e0",border:"#ffcc80",replaces:"其他蔬菜",desc:"β-胡蘿蔔素、維E、鉀質豐富",
     methods:[
@@ -233,7 +259,8 @@ const SURPLUS={
       {name:"南瓜燉豆腐",how:"燉煮",icon:"🫕",ingredients:["南瓜 四分之一顆","板豆腐 半塊","醬油 1匙"],note:"鉀鈣雙補"},
       {name:"南瓜烤起司",how:"烤製",icon:"🧀",ingredients:["南瓜 四分之一顆","起司絲少許","黑胡椒"],note:"焗烤甜香"},
       {name:"奶油南瓜泥",how:"壓泥",icon:"🍚",ingredients:["南瓜 四分之一顆","奶油 5g","鮮奶 2匙","鹽"],note:"甜潤易消化"},
-      {name:"南瓜豆干煮",how:"燴煮",icon:"🟫",ingredients:["南瓜 四分之一顆","五香豆干 4片","醬油","糖少許"],note:"高鈣甜鹹配"},
+      {name:"南瓜豆干煮",how:"燴煮",icon:"🟫",ingredients:["南瓜 四分之一顆","五香豆干 4片","醬油","糖少許"],note:"高鈣甜鹹配"},,
+      {name:"南瓜奶香咖哩",how:"燉煮",icon:"🍛",ingredients:["南瓜 四分之一顆","板豆腐 半塊","咖哩粉 1匙","鮮奶 100ml","鹽"],note:"南瓜甜味讓無五辛咖哩更圓潤"}
     ]},
   茄子:{icon:"🍆",color:"#6a1b9a",bg:"#f3e5f5",border:"#ce93d8",replaces:"其他蔬菜",desc:"花青素護心，鉀質豐富，夏秋最嫩",
     methods:[
@@ -243,7 +270,8 @@ const SURPLUS={
       {name:"味噌燒茄子",how:"燒製",icon:"🟤",ingredients:["茄子 2條","味噌 1匙","糖少許","香油","芹菜末"],note:"味噌提味；益生菌加分"},
       {name:"番茄燴茄子",how:"燴製",icon:"🍅",ingredients:["茄子 2條","番茄 1顆","醬油少許","糖少許","九層塔"],note:"茄紅素＋花青素雙抗氧化"},
       {name:"茄子豆腐煲",how:"煲煮",icon:"🫕",ingredients:["茄子 2條","板豆腐 半塊","醬油","薑黃粉","九層塔"],note:"薑黃抗發炎；假日慢煲"},
-      {name:"茄子起司烘烤",how:"烤製",icon:"🧀",ingredients:["茄子 2條","番茄醬少許","起司絲","黑胡椒"],note:"起司補鈣；烤箱悠閒料理"},
+      {name:"茄子起司烘烤",how:"烤製",icon:"🧀",ingredients:["茄子 2條","番茄醬少許","起司絲","黑胡椒"],note:"起司補鈣；烤箱悠閒料理"},,
+      {name:"咖哩燒茄子",how:"燒製",icon:"🍛",ingredients:["茄子 2條","咖哩粉 1匙","醬油少許","鮮奶 60ml","九層塔"],note:"茄子很吸味；做成溫和咖哩很適合"}
     ]},
   馬鈴薯:{icon:"🥔",color:"#5d4037",bg:"#efebe9",border:"#bcaaa4",replaces:"其他蔬菜",desc:"維生素C豐富，醋溜後降低GI值",
     methods:[
@@ -253,7 +281,8 @@ const SURPLUS={
       {name:"馬鈴薯煎餅",how:"煎製",icon:"🥞",ingredients:["馬鈴薯 2顆（刨絲）","雞蛋 2顆","麵粉 1匙","鹽","芹菜末"],note:"外酥內軟；加蛋補蛋白質"},
       {name:"奶油馬鈴薯泥",how:"壓泥",icon:"🍚",ingredients:["馬鈴薯 2顆","鮮奶 3匙","奶油 5g","鹽","黑胡椒"],note:"鮮奶補鈣；泥GI比白飯低"},
       {name:"番茄燴馬鈴薯",how:"燴製",icon:"🍅",ingredients:["馬鈴薯 2顆","番茄 1顆","醬油少許","糖少許","芹菜末"],note:"茄紅素提升；酸甜開胃"},
-      {name:"馬鈴薯蛋花湯",how:"煮湯",icon:"🍲",ingredients:["馬鈴薯 2顆（小丁）","雞蛋 1顆","鹽","芹菜末","黑胡椒"],note:"消化溫和；週日湯品"},
+      {name:"馬鈴薯蛋花湯",how:"煮湯",icon:"🍲",ingredients:["馬鈴薯 2顆（小丁）","雞蛋 1顆","鹽","芹菜末","黑胡椒"],note:"消化溫和；週日湯品"},,
+      {name:"家常蔬菜咖哩",how:"燉煮",icon:"🍛",ingredients:["馬鈴薯 2顆","紅蘿蔔 1條","板豆腐 半塊","咖哩粉 1匙","鮮奶 100ml","鹽"],note:"馬鈴薯與紅蘿蔔最穩；加豆腐更像主菜"}
     ]},
   // ── 菇類 ──
   杏鮑菇:{icon:"🍄",color:"#5d4037",bg:"#efebe9",border:"#bcaaa4",replaces:"其他蔬菜",desc:"β-葡聚醣強化免疫，維D2補充",
@@ -274,7 +303,8 @@ const SURPLUS={
       {name:"猴頭菇味噌湯",how:"煮湯",icon:"🍵",ingredients:["猴頭菇 100g","嫩豆腐 半盒","味噌 1.5匙","芹菜末"],note:"益生菌＋多醣體護腸胃"},
       {name:"猴頭菇炒蛋",how:"炒製",icon:"🍳",ingredients:["猴頭菇 150g","雞蛋 3顆","鹽","芹菜末"],note:"NGF＋優質蛋白；素食界全能料理"},
       {name:"猴頭菇起司烤",how:"烤製",icon:"🧀",ingredients:["猴頭菇 150g","起司絲少許","黑胡椒","橄欖油"],note:"烤後外焦香，補鈣又護胃"},
-      {name:"猴頭菇番茄燴",how:"燴製",icon:"🍅",ingredients:["猴頭菇 150g","番茄 1顆","醬油少許","糖少許"],note:"茄紅素＋神經生長因子，抗氧護腦"},
+      {name:"猴頭菇番茄燴",how:"燴製",icon:"🍅",ingredients:["猴頭菇 150g","番茄 1顆","醬油少許","糖少許"],note:"茄紅素＋神經生長因子，抗氧護腦"},,
+      {name:"猴頭菇咖哩燴",how:"燴製",icon:"🍛",ingredients:["猴頭菇 150g","板豆腐 半塊","咖哩粉 1匙","鮮奶 80ml","鹽"],note:"菇香很能撐起無五辛咖哩的層次"}
     ]},
   // ── 豆製品 ──
   板豆腐:{icon:"⬜",color:"#e65100",bg:"#fff3e0",border:"#ffcc80",replaces:"豆製品",desc:"鈣磷比佳，蛋白質完整，料理多變",
@@ -285,7 +315,8 @@ const SURPLUS={
       {name:"豆腐鑲蛋",how:"蒸製",icon:"🥚",ingredients:["板豆腐 1塊","雞蛋 2顆","醬油膏","香油"],note:"蒸製易消化"},
       {name:"麻婆豆腐（無辛）",how:"燒製",icon:"🌶",ingredients:["板豆腐 1塊","番茄醬少許","醬油","糖少許","芹菜末"],note:"番茄醬取代辣椒"},
       {name:"豆腐起司烘烤",how:"烤製",icon:"🧀",ingredients:["板豆腐 1塊","起司絲少許","黑胡椒","橄欖油"],note:"雙鈣疊加"},
-      {name:"酸辣豆腐湯",how:"煮湯",icon:"🍲",ingredients:["板豆腐 1塊","雞蛋 1顆","烏醋","白胡椒","醬油"],note:"不需五辛也夠味"},
+      {name:"酸辣豆腐湯",how:"煮湯",icon:"🍲",ingredients:["板豆腐 1塊","雞蛋 1顆","烏醋","白胡椒","醬油"],note:"不需五辛也夠味"},,
+      {name:"奶香咖哩豆腐",how:"燉煮",icon:"🍛",ingredients:["板豆腐 1塊","咖哩粉 1匙","鮮奶 100ml","鹽","黑胡椒"],note:"無五辛也能做出溫和順口的主菜"}
     ]},
   毛豆仁:{icon:"🫘",color:"#388e3c",bg:"#e8f5e9",border:"#81c784",replaces:"豆製品",desc:"完整9種胺基酸，葉黃素護眼",
     methods:[
@@ -296,12 +327,13 @@ const SURPLUS={
       {name:"毛豆沙拉",how:"涼拌",icon:"🥗",ingredients:["毛豆仁 150g","番茄 1顆","烏醋","鹽","香油"],note:"無需開火；高蛋白沙拉"},
       {name:"毛豆炒紅蘿蔔",how:"炒製",icon:"🥕",ingredients:["毛豆仁 150g","紅蘿蔔 1條","鹽","橄欖油"],note:"胡蘿蔔素＋葉黃素護眼"},
       {name:"毛豆起司烘烤",how:"烤製",icon:"🧀",ingredients:["毛豆仁 150g","起司絲少許","黑胡椒"],note:"高蛋白零食料理"},
+      {name:"毛豆咖哩炒蔬菜",how:"炒製",icon:"🍛",ingredients:["毛豆仁 150g","紅蘿蔔 1條","玉米 半根","咖哩粉 1匙","鹽"],note:"高蛋白又有甜味，很適合做乾香咖哩"},
     ]},
 };
 
 // ── 冰箱食材分類 ──────────────────────────────────────────
 const FRIDGE_CATS=[
-  {cat:"🥬 葉菜類",color:"#eaf6ea",border:"#7cc97c",items:["菠菜","A菜","空心菜","地瓜葉","莧菜","油菜","青江菜","大白菜","芥菜","豌豆苗"]},
+  {cat:"🥬 葉菜類",color:"#eaf6ea",border:"#7cc97c",items:["菠菜","A菜","空心菜","地瓜葉","莧菜","油菜","青江菜","小松菜","小白菜","大白菜","芥菜","豌豆苗"]},
   {cat:"🥦 蔬菜類",color:"#f0f8e8",border:"#9ccc65",items:["青花菜","白花椰菜","高麗菜","白蘿蔔","紅蘿蔔","番茄","紅甜椒","黃甜椒","南瓜","馬鈴薯","玉米","茄子","絲瓜","苦瓜","黃瓜","秋葵","蘆筍","蓮藕","山藥","玉米筍","竹筍","冬瓜","綠豆芽","黃豆芽"]},
   {cat:"🍄 菇　類",color:"#f5f0e8",border:"#bcaaa4",items:["杏鮑菇","猴頭菇","金針菇","香菇","珊瑚菇","黑木耳","白木耳"]},
   {cat:"⬜ 豆製品",color:"#fff8e4",border:"#ffd54f",items:["板豆腐","嫩豆腐","五香豆干","毛豆仁"]},
@@ -311,7 +343,7 @@ const FRIDGE_CATS=[
 const PANTRY=new Set([
   // ── 主調味料（去後綴後的乾淨名稱，確保 extractName 結果能命中）──
   "醬油","醬油膏","醬油少許","鹽","橄欖油","黑胡椒","白胡椒","烏醋","醋","香油",
-  "薑黃粉","八角","月桂葉","冰糖","糖","辣椒","番茄醬","麵粉","豆瓣醬","味醂",
+  "薑黃粉","咖哩粉","八角","月桂葉","冰糖","糖","辣椒","番茄醬","麵粉","豆瓣醬","味醂",
   "太白粉水","昆布","芝麻","薑末","薑絲","溫水","白飯","水","芝麻油","鮮奶",
   // ── 原始後綴串保留（render 食材標紅時比對用）──
   "番茄醬少許","麵粉 1匙","豆瓣醬少許","昆布少許","芝麻少許","薑絲少許","白飯少許",
@@ -321,7 +353,7 @@ const PANTRY=new Set([
 
 // ── 各類別placeholder採購建議（庫存不足時具體推薦） ──────────
 const CAT_BUY_RECS={
-  "葉菜":  [{name:"菠菜",why:"鐵質豐富，四季皆宜"},{name:"青江菜",why:"鈣維A豐，快炒不失敗"},{name:"地瓜葉",why:"鈣質冠軍，夏秋當令"}],
+  "葉菜":  [{name:"菠菜",why:"鐵質豐富，四季皆宜"},{name:"青江菜",why:"鈣維A豐，快炒不失敗"},{name:"小松菜",why:"鈣與維C兼具，快炒與煮湯都穩"},{name:"小白菜",why:"口感柔嫩，清炒煮湯都適合"},{name:"地瓜葉",why:"鈣質冠軍，夏秋當令"}],
   "豆製品":[{name:"板豆腐",why:"鈣蛋白雙補，料理最多變"},{name:"嫩豆腐",why:"易消化，蒸煮煎湯皆宜"},{name:"毛豆仁",why:"完整胺基酸，冷凍常備"}],
   "其他蔬菜":[{name:"番茄",why:"茄紅素加熱更好吸收"},{name:"青花菜",why:"維C+鈣+纖維三合一"},{name:"紅蘿蔔",why:"β-胡蘿蔔素護眼，耐儲存"}],
   "蛋類":  [{name:"雞蛋",why:"完整必需胺基酸，最經濟蛋白來源"}],
@@ -330,7 +362,7 @@ const CAT_BUY_RECS={
 // ── 各食材提供的營養素標籤 ───────────────────────────────
 const ITEM_NUTRIENTS={
   菠菜:["鐵質","鈣質","膳食纖維","葉酸"],莧菜:["鐵質","鈣質"],地瓜葉:["鈣質","鐵質","維生素C"],
-  油菜:["鈣質","維生素K"],青江菜:["鈣質","維生素C"],高麗菜:["維生素C","膳食纖維"],
+  油菜:["鈣質","維生素K"],青江菜:["鈣質","維生素C"],小松菜:["鈣質","維生素C","葉酸"],小白菜:["鈣質","維生素C"],高麗菜:["維生素C","膳食纖維"],
   大白菜:["膳食纖維","維生素C"],A菜:["葉酸","維生素C"],空心菜:["鐵質","鈣質"],
   板豆腐:["蛋白質","鈣質"],嫩豆腐:["蛋白質","鈣質"],五香豆干:["蛋白質","鈣質"],
   毛豆仁:["蛋白質","鐵質","葉酸"],雞蛋:["蛋白質","維生素B12"],起司絲:["蛋白質","鈣質"],
@@ -564,7 +596,7 @@ const MAIN_COLOR={
   "菠菜":   {sticky:"#d0e8d0",pin:"#5a9a60"},"A菜":    {sticky:"#d8ecda",pin:"#60a868"},
   "空心菜": {sticky:"#cfe8ce",pin:"#56966a"},"地瓜葉": {sticky:"#d4ebd2",pin:"#609060"},
   "莧菜":   {sticky:"#dce8d8",pin:"#5e8c5a"},"油菜":   {sticky:"#d8ecd8",pin:"#648c68"},
-  "青江菜": {sticky:"#d2ead0",pin:"#5e9060"},"大白菜": {sticky:"#e8f0e0",pin:"#7a9870"},
+  "青江菜": {sticky:"#d2ead0",pin:"#5e9060"},"小松菜": {sticky:"#d7eed8",pin:"#5f995f"},"小白菜": {sticky:"#e3f2da",pin:"#7aa35d"},"大白菜": {sticky:"#e8f0e0",pin:"#7a9870"},
   "芥菜":   {sticky:"#dcecd4",pin:"#6a9460"},"豌豆苗": {sticky:"#d4eccc",pin:"#5e9850"},
   // 豆製品
   "板豆腐": {sticky:"#f5e8c0",pin:"#c07828"},"嫩豆腐": {sticky:"#f2e4b8",pin:"#b87020"},
@@ -672,6 +704,21 @@ const DISH_POOL={
     {name:"清炒地瓜葉",icon:"🍃",main:"地瓜葉",how:"快炒",n:{p:5,ca:158,fe:2.7,vc:83,fi:5.0,kcal:105},ingredients:["地瓜葉 1把","橄欖油","鹽"],note:"鈣105mg/100g冠軍葉菜"},
     {name:"清炒莧菜",icon:"🌱",main:"莧菜",how:"快炒",n:{p:4,ca:323,fe:4.4,vc:53,fi:3.3,kcal:80},ingredients:["莧菜 1把","橄欖油","鹽"],note:"鈣是菠菜3倍"},
     {name:"清炒青江菜",icon:"🥬",main:"青江菜",how:"快炒",n:{p:2,ca:158,fe:1.7,vc:68,fi:2.7,kcal:80,b2:0.07},ingredients:["青江菜 1把","橄欖油","鹽"],note:"鈣維A豐富"},
+    {name:"清炒小松菜",icon:"🥬",main:"小松菜",how:"快炒",n:{p:3,ca:170,fe:2.1,vc:46,fi:2.8,kcal:72,b2:0.08},ingredients:["小松菜 1把","橄欖油","鹽"],note:"清脆好炒；鈣與維C都有"},
+    {name:"小松菜炒蛋",icon:"🍳",main:"小松菜",how:"炒蛋",n:{p:16,ca:214,fe:3.2,vc:42,fi:2.8,kcal:246,b12:1.2,b2:0.47},ingredients:["小松菜 1把","雞蛋 2顆","鹽","黑胡椒"],note:"蛋白質一起補；很適合家常快炒"},
+    {name:"麻醬小松菜",icon:"🌿",main:"小松菜",how:"涼拌",n:{p:6,ca:228,fe:2.8,vc:40,fi:3.5,kcal:176,b2:0.08},ingredients:["小松菜 1把","芝麻醬 1匙","醬油","烏醋"],note:"芝麻鈣加分；冷熱都能吃"},
+    {name:"胡麻小松菜",icon:"🌿",main:"小松菜",how:"拌製",n:{p:5,ca:210,fe:2.4,vc:38,fi:3.0,kcal:148,b2:0.07},ingredients:["小松菜 1把","芝麻醬 1匙","醬油少許"],note:"胡麻香氣溫和；冷熱都適合"},
+    {name:"小松菜豆腐湯",icon:"🍲",main:"小松菜",how:"煮湯",n:{p:13,ca:328,fe:3.0,vc:32,fi:2.6,kcal:138,b2:0.12},ingredients:["小松菜 1把","嫩豆腐 半盒","鹽","香油"],note:"清爽順口；晚餐配飯很穩"},
+    {name:"小松菜炒豆干",icon:"🟫",main:"小松菜",how:"快炒",n:{p:15,ca:398,fe:3.3,vc:34,fi:3.3,kcal:198,b2:0.10},ingredients:["小松菜 1把","五香豆干 3片","醬油少許"],note:"高鈣高蛋白；單吃也有飽足感"},
+    {name:"小松菜燴菇",icon:"🍄",main:"小松菜",how:"燴製",n:{p:6,ca:180,fe:2.7,vc:38,fi:3.4,kcal:92,b2:0.22},ingredients:["小松菜 1把","香菇 2朵","醬油少許"],note:"菇香帶鮮；更有主菜感"},
+    {name:"小松菜奶香烘蛋",icon:"🧀",main:"小松菜",how:"烘製",n:{p:19,ca:246,fe:3.0,vc:26,fi:2.2,kcal:268,b12:1.6,b2:0.52},ingredients:["小松菜 1把","雞蛋 2顆","鮮奶 50ml","起司絲 少許"],note:"奶香柔和；早餐晚餐都合適"},
+    {name:"小松菜蒸蛋",icon:"🥚",main:"小松菜",how:"蒸製",n:{p:17,ca:188,fe:2.6,vc:24,fi:1.8,kcal:224,b12:1.4,b2:0.48},ingredients:["小松菜（切末） 1把","雞蛋 3顆","醬油膏 1匙"],note:"蒸起來更嫩；很適合清淡版本"},
+    {name:"清炒小白菜",icon:"🥬",main:"小白菜",how:"快炒",n:{p:2,ca:122,fe:1.4,vc:34,fi:1.9,kcal:58,b2:0.06},ingredients:["小白菜 1把","橄欖油","鹽"],note:"柔嫩清甜；最適合快速上桌"},
+    {name:"小白菜炒蛋",icon:"🍳",main:"小白菜",how:"炒蛋",n:{p:15,ca:172,fe:2.4,vc:28,fi:1.9,kcal:236,b12:1.2,b2:0.46},ingredients:["小白菜 1把","雞蛋 2顆","鹽","黑胡椒"],note:"家常耐吃；葉梗口感很順"},
+    {name:"麻醬小白菜",icon:"🌿",main:"小白菜",how:"涼拌",n:{p:5,ca:196,fe:2.1,vc:26,fi:2.6,kcal:166,b2:0.07},ingredients:["小白菜 1把","芝麻醬 1匙","醬油","烏醋"],note:"芝麻香能把菜味拉得更圓"},
+    {name:"小白菜豆腐湯",icon:"🍲",main:"小白菜",how:"煮湯",n:{p:13,ca:314,fe:2.6,vc:22,fi:2.1,kcal:132,b2:0.11},ingredients:["小白菜 1把","板豆腐 半塊","鹽","香油"],note:"清爽補鈣；很適合晚餐湯品"},
+    {name:"小白菜燴菇",icon:"🍄",main:"小白菜",how:"燴製",n:{p:6,ca:96,fe:1.9,vc:22,fi:3.0,kcal:94,b2:0.12},ingredients:["小白菜 1把","香菇 3朵","醬油少許","鹽"],note:"菇香加進來就很像完整一道菜"},
+    {name:"小白菜蒸蛋",icon:"🥚",main:"小白菜",how:"蒸製",n:{p:16,ca:158,fe:2.2,vc:18,fi:1.5,kcal:218,b12:1.4,b2:0.47},ingredients:["小白菜（切末） 1把","雞蛋 3顆","醬油膏 1匙"],note:"蒸蛋更嫩；很適合清淡口味"},
     {name:"清炒高麗菜",icon:"🥬",main:"高麗菜",how:"快炒",n:{p:2,ca:60,fe:0.8,vc:68,fi:3.8,kcal:85,b2:0.07},ingredients:["高麗菜 四分之一顆","橄欖油","鹽"],note:"維C豐；甜脆清爽"},
     {name:"高麗菜炒豆干",icon:"🟫",main:"高麗菜",how:"快炒",n:{p:14,ca:224,fe:2.9,vc:68,fi:4.6,kcal:185,b2:0.07},ingredients:["高麗菜 四分之一顆","五香豆干 3片","醬油少許"],note:"維C＋高鈣雙補"},
     {name:"清炒大白菜",icon:"🥬",main:"大白菜",how:"快炒",n:{p:2,ca:63,fe:0.6,vc:41,fi:1.8,kcal:70,b2:0.07},ingredients:["大白菜 四分之一顆","橄欖油","鹽"],note:"冬日最甜；膳食纖維豐"},
@@ -699,7 +746,12 @@ const DISH_POOL={
     // ── 綠豆芽補充（原有2道） ──
     {name:"綠豆芽炒豆干",icon:"🌱",main:"綠豆芽",how:"快炒",n:{p:19,ca:228,fe:4.0,vc:21,fi:4.0,kcal:215,b2:0.13},ingredients:["綠豆芽 200g","五香豆干 3片","醬油少許"],note:"雙豆高鈣蛋白；清脆爽口"},
     {name:"涼拌綠豆芽",icon:"🌱",main:"綠豆芽",how:"涼拌",n:{p:5,ca:22,fe:1.6,vc:25,fi:3.2,kcal:50,b2:0.13},ingredients:["綠豆芽 200g","烏醋 1匙","鹽","香油少許"],note:"清熱解毒；醋讓礦物質更好吸收"},
+    {name:"綠豆芽炒豆干",icon:"🌱",main:"綠豆芽",how:"快炒",n:{p:19,ca:228,fe:4.0,vc:21,fi:4.0,kcal:215,b2:0.13},ingredients:["綠豆芽 200g","五香豆干 3片","醬油少許"],note:"雙豆高鈣蛋白；清脆爽口"},
+    {name:"涼拌綠豆芽",icon:"🌱",main:"綠豆芽",how:"涼拌",n:{p:5,ca:22,fe:1.6,vc:25,fi:3.2,kcal:50,b2:0.13},ingredients:["綠豆芽 200g","烏醋 1匙","鹽","香油少許"],note:"清熱解毒；醋讓礦物質更好吸收"},
     {name:"綠豆芽嫩豆腐",icon:"⬜",main:"綠豆芽",how:"燙拌",n:{p:22,ca:412,fe:5.2,vc:21,fi:3.8,kcal:228,b2:0.13},ingredients:["綠豆芽 200g","嫩豆腐 半盒","醬油膏","香油"],note:"雙豆蛋白鈣；清爽不開火"},
+    {name:"綠豆芽豆腐湯",icon:"🍲",main:"綠豆芽",how:"煮湯",n:{p:7,ca:100,fe:1.5,vc:11,fi:1.8,kcal:80,b12:0.15,b2:0.36},ingredients:["綠豆芽 150g","嫩豆腐 半盒","鹽少許","香油"],note:"夏日清熱；低卡高維C"},
+    {name:"綠豆芽炒菇",icon:"🍄",main:"綠豆芽",how:"快炒",n:{p:7,ca:36,fe:2.0,vc:19,fi:3.4,kcal:88,b2:0.18},ingredients:["綠豆芽 200g","香菇 3朵","鹽","黑胡椒"],note:"菇香加進來更完整；仍保留爽脆口感"},
+    {name:"綠豆芽蒸蛋",icon:"🥚",main:"綠豆芽",how:"蒸製",n:{p:17,ca:92,fe:2.8,vc:12,fi:1.6,kcal:210,b12:1.4,b2:0.46},ingredients:["綠豆芽 120g","雞蛋 3顆","鹽少許","香油"],note:"把豆芽切短拌進蒸蛋；口感更柔和"},
     // ── 黃豆芽補充（原有2道） ──
     {name:"黃豆芽豆腐煮",icon:"🌱",main:"黃豆芽",how:"燉燴",n:{p:25,ca:461,fe:5.3,vc:24,fi:3.8,kcal:248,b2:0.13},ingredients:["黃豆芽 200g","板豆腐 半塊","醬油少許","薑末"],note:"雙豆蛋白；大豆異黃酮護骨"},
     {name:"黃豆芽豆干炒",icon:"🌱",main:"黃豆芽",how:"快炒",n:{p:23,ca:261,fe:4.7,vc:24,fi:3.8,kcal:248,b2:0.13},ingredients:["黃豆芽 200g","五香豆干 3片","醬油少許"],note:"高鈣三豆；完整胺基酸"},
@@ -754,6 +806,7 @@ const DISH_POOL={
     {name:"毛豆炒玉米粒",icon:"🫘",main:"毛豆仁",how:"快炒",n:{p:18,ca:90,fe:3.5,vc:41,fi:8.1,kcal:220,b12:0.4,b2:0.32},ingredients:["毛豆仁 150g","玉米 半根","紅甜椒少許","鹽"],note:"完整9種胺基酸"},
     {name:"毛豆炒豆腐丁",icon:"🫘",main:"毛豆仁",how:"快炒",n:{p:21,ca:440,fe:4.5,vc:0,fi:4.0,kcal:240,b12:0.4,b2:0.25},ingredients:["板豆腐 1塊","毛豆仁 75g","醬油少許","薑黃粉少許"],note:"雙豆蛋白"},
     {name:"豆腐起司烘烤",icon:"🧀",main:"板豆腐",how:"烘烤",n:{p:20,ca:850,fe:3.8,vc:0,fi:0.8,kcal:280,b12:0.4,b2:0.25},ingredients:["板豆腐 1塊","起司絲少許","黑胡椒","橄欖油"],note:"雙鈣疊加"},
+    {name:"奶香咖哩豆腐",icon:"🍛",main:"板豆腐",how:"燉燴",n:{p:16,ca:700,fe:3.8,vc:0,fi:0.8,kcal:235,b2:0.25},ingredients:["板豆腐 1塊","咖哩粉 1匙","鮮奶 100ml","鹽","黑胡椒"],note:"無五辛也能做出溫和順口的主菜"},
     {name:"毛豆沙拉",icon:"🥗",main:"毛豆仁",how:"沙拉",n:{p:18,ca:90,fe:3.5,vc:64,fi:9.3,kcal:210,b12:0.4,b2:0.25},ingredients:["毛豆仁 150g","番茄 1顆","烏醋","鹽","香油"],note:"高蛋白無需開火"},
     {name:"百頁豆腐煎",icon:"⬜",main:"板豆腐",how:"香煎",n:{p:16,ca:700,fe:3.8,vc:0,fi:0.8,kcal:235,b12:1.2,b2:0.55},ingredients:["板豆腐 1塊","醬油 1匙","薑黃粉","芹菜末"],note:"煎至金黃高蛋白"},
     {name:"豆腐炒蛋",icon:"🍳",main:"板豆腐",how:"炒蛋",n:{p:30,ca:760,fe:5.8,vc:0,fi:0.8,kcal:310,b12:1.2,b2:0.46},ingredients:["板豆腐 1塊","雞蛋 2顆","鹽","芹菜末"],note:"蛋白質雙補清爽"},
@@ -773,11 +826,13 @@ const DISH_POOL={
     {name:"紅燒茄子",icon:"🍆",main:"茄子",how:"紅燒",n:{p:2,ca:18,fe:0.4,vc:6,fi:6.0,kcal:95},ingredients:["茄子 2條","醬油 1匙","糖少許","九層塔","橄欖油"],note:"花青素護心；九層塔提香"},
     {name:"醋溜馬鈴薯絲",icon:"🥢",main:"馬鈴薯",how:"快炒",n:{p:4,ca:24,fe:1.6,vc:38,fi:4.4,kcal:175},ingredients:["馬鈴薯 2顆","烏醋 1.5匙","鹽","香菜少許"],note:"醋讓澱粉GI降低；助礦物質吸收"},
     {name:"清炒青花菜",icon:"🥦",main:"青花菜",how:"快炒",n:{p:6,ca:94,fe:1.4,vc:178,fi:5.2,kcal:115},ingredients:["青花菜 半顆","橄欖油","鹽","檸檬汁少許"],note:"蘿蔔硫素防癌；維C豐"},
+    {name:"咖哩炒青花菜",icon:"🍛",main:"青花菜",how:"快炒",n:{p:22,ca:794,fe:5.2,vc:178,fi:6.0,kcal:272,b2:0.13},ingredients:["青花菜 半顆","咖哩粉 1匙","鹽","橄欖油"],note:"青花菜很適合乾香咖哩；清爽不厚重"},
     {name:"炒紅蘿蔔絲",icon:"🥕",main:"紅蘿蔔",how:"快炒",n:{p:1,ca:50,fe:0.5,vc:9,fi:4.2,kcal:105,b2:0.06},ingredients:["紅蘿蔔 1條","橄欖油","鹽"],note:"油脂促β-胡蘿蔔素吸收"},
     {name:"紅蘿蔔燉豆腐",icon:"🫕",main:"紅蘿蔔",how:"燉燴",n:{p:12,ca:415,fe:4.3,vc:9,fi:5.0,kcal:260,b2:0.13},ingredients:["紅蘿蔔 1條","板豆腐 1塊","醬油 1匙","薑黃粉少許"],note:"薑黃抗炎＋β-胡蘿蔔素；護眼補鈣"},
     {name:"醋溜紅蘿蔔絲",icon:"🥕",main:"紅蘿蔔",how:"涼拌",n:{p:1,ca:50,fe:0.5,vc:12,fi:4.2,kcal:80,b2:0.13},ingredients:["紅蘿蔔 1條","烏醋 1匙","鹽","香油少許","香菜"],note:"醋讓礦物質更好吸收；清爽不開火"},
     {name:"紅蘿蔔炒豆干",icon:"🟫",main:"紅蘿蔔",how:"快炒",n:{p:14,ca:245,fe:3.0,vc:9,fi:5.0,kcal:220,b2:0.07},ingredients:["紅蘿蔔 1條","五香豆干 4片","醬油少許","芹菜末"],note:"高鈣配色豐富；β-胡蘿蔔素護眼"},
     {name:"紅蘿蔔南瓜烘",icon:"🎃",main:"紅蘿蔔",how:"烘烤",n:{p:2,ca:75,fe:1.9,vc:16,fi:5.1,kcal:145,b2:0.07},ingredients:["紅蘿蔔 1條","南瓜 四分之一顆","橄欖油","黑胡椒","鹽"],note:"雙倍β-胡蘿蔔素；秋冬護眼烤蔬菜"},
+    {name:"咖哩燒紅蘿蔔",icon:"🍛",main:"紅蘿蔔",how:"燉燴",n:{p:12,ca:420,fe:4.4,vc:9,fi:5.0,kcal:268,b2:0.13},ingredients:["紅蘿蔔 1條","咖哩粉 1匙","鹽","橄欖油"],note:"紅蘿蔔甜味很適合咖哩；可當配菜或配飯"},
     {name:"清炒紅甜椒",icon:"🫑",main:"紅甜椒",how:"快炒",n:{p:2,ca:14,fe:0.7,vc:255,fi:3.1,kcal:75,b2:0.06},ingredients:["紅甜椒 1顆","橄欖油","鹽","黑胡椒少許"],note:"維C高達170mg；大火快炒保維C"},
     {name:"紅甜椒炒豆腐",icon:"🫑",main:"紅甜椒",how:"快炒",n:{p:17,ca:714,fe:4.5,vc:255,fi:3.9,kcal:265,b2:0.06},ingredients:["紅甜椒 1顆","板豆腐 1塊","醬油少許","芹菜末"],note:"維C最高＋豆腐鈣；色彩繽紛補鐵"},
     {name:"紅甜椒炒玉米",icon:"🌽",main:"紅甜椒",how:"快炒",n:{p:4,ca:16,fe:1.1,vc:258,fi:5.5,kcal:200,b2:0.06},ingredients:["紅甜椒 1顆","玉米 半根","橄欖油","鹽"],note:"葉黃素護眼＋維C抗氧化"},
@@ -786,6 +841,7 @@ const DISH_POOL={
     {name:"涼拌黃瓜",icon:"🥒",main:"黃瓜",how:"涼拌",n:{p:1,ca:20,fe:0.5,vc:14,fi:1.1,kcal:35,b2:0.06},ingredients:["黃瓜 1條","烏醋 1匙","鹽","香油少許"],note:"清爽不開火；水分豐富"},
     {name:"蒸茄子佐醬汁",icon:"🍆",main:"茄子",how:"蒸製",n:{p:2,ca:18,fe:0.4,vc:6,fi:6.0,kcal:65},ingredients:["茄子 2條","醬油膏 1匙","烏醋少許","香油","芹菜末"],note:"保留花青素；熱量最低"},
     {name:"清炒白花椰菜",icon:"🤍",main:"白花椰菜",how:"快炒",n:{p:4,ca:44,fe:0.8,vc:96,fi:4.0,kcal:95,b12:0.4,b2:0.1},ingredients:["白花椰菜 半顆","橄欖油","鹽","檸檬汁少許"],note:"蘿蔔硫素防癌；快炒保維C"},
+    {name:"乾香咖哩花椰菜",icon:"🍛",main:"白花椰菜",how:"燉燴",n:{p:20,ca:744,fe:4.6,vc:96,fi:4.8,kcal:252,b2:0.13},ingredients:["白花椰菜 半顆","咖哩粉 1匙","鹽","橄欖油"],note:"十字花科很適合乾香咖哩；越嚼越香"},
     {name:"奶油焗花椰菜",icon:"🧀",main:"白花椰菜",how:"烘烤",n:{p:7,ca:194,fe:0.8,vc:85,fi:4.0,kcal:185,b12:0.4,b2:0.1},ingredients:["白花椰菜 半顆","奶油 8g","起司絲少許","黑胡椒"],note:"奶油促維K吸收；秋冬暖心"},
     {name:"清炒秋葵",icon:"🌿",main:"秋葵",how:"快炒",n:{p:3,ca:77,fe:1.1,vc:23,fi:5.2,kcal:80,b12:0.4,b2:0.1},ingredients:["秋葵 200g","橄欖油","鹽"],note:"黏蛋白護胃低卡"},
     {name:"炒蓮藕片",icon:"🌸",main:"蓮藕",how:"快炒",n:{p:3,ca:38,fe:1.4,vc:44,fi:4.3,kcal:110,b12:1.6,b2:0.5},ingredients:["蓮藕 1節","烏醋 1匙","鹽","芹菜末"],note:"秋冬脆嫩；醋保維C"},
@@ -797,8 +853,11 @@ const DISH_POOL={
     {name:"清炒猴頭菇",icon:"🦁",main:"猴頭菇",how:"快炒",n:{p:4,ca:5,fe:0.8,vc:6,fi:6.6,kcal:100,b12:0.4,b2:0.38},ingredients:["猴頭菇 150g","橄欖油","醬油 1匙","黑胡椒"],note:"NGF護神經；炒前擠乾水分口感更佳"},
     {name:"番茄燴猴頭菇",icon:"🍅",main:"猴頭菇",how:"燉燴",n:{p:5,ca:15,fe:1.8,vc:29,fi:7.8,kcal:115,b12:0.4,b2:0.32},ingredients:["猴頭菇 150g","番茄 1顆","醬油少許","糖少許"],note:"茄紅素＋NGF，抗氧護腦"},
     {name:"猴頭菇起司烤",icon:"🧀",main:"猴頭菇",how:"烘烤",n:{p:7,ca:155,fe:0.8,vc:6,fi:6.6,kcal:165,b12:0.4,b2:0.41},ingredients:["猴頭菇 150g","起司絲少許","黑胡椒","橄欖油"],note:"烤後外焦香，補鈣又護胃"},
+    {name:"猴頭菇咖哩燴",icon:"🍛",main:"猴頭菇",how:"燉燴",n:{p:20,ca:705,fe:4.6,vc:6,fi:7.4,kcal:275,b2:0.28},ingredients:["猴頭菇 150g","板豆腐 半塊","咖哩粉 1匙","鮮奶 80ml","鹽"],note:"菇香很能撐起無五辛咖哩的層次"},
     {name:"三色炒玉米粒",icon:"🌽",main:"玉米",how:"快炒",n:{p:6,ca:12,fe:1.3,vc:134,fi:7.6,kcal:210,b12:0.4,b2:0.41},ingredients:["玉米 1根（剝粒）","紅甜椒 半顆","毛豆仁少許","鹽"],note:"葉黃素護眼"},
     {name:"番茄燴花椰菜",icon:"🍅",main:"白花椰菜",how:"燉燴",n:{p:5,ca:54,fe:1.8,vc:119,fi:6.4,kcal:110,b2:0.15},ingredients:["白花椰菜 半顆","番茄 1顆","醬油少許","糖少許"],note:"雙植化素抗氧化"},
+    {name:"咖哩炒高麗菜",icon:"🍛",main:"高麗菜",how:"燉燴",n:{p:12,ca:410,fe:2.4,vc:68,fi:4.8,kcal:188,b2:0.06},ingredients:["高麗菜 四分之一顆","咖哩粉 1匙","鹽","橄欖油"],note:"高麗菜甜味很適合乾香咖哩；清爽耐吃"},
+    {name:"家常蔬菜咖哩",icon:"🍛",main:"馬鈴薯",how:"燉燴",n:{p:12,ca:374,fe:5.4,vc:38,fi:5.4,kcal:280,b2:0.18},ingredients:["馬鈴薯 2顆","紅蘿蔔 1條","板豆腐 半塊","咖哩粉 1匙","鮮奶 100ml","鹽"],note:"馬鈴薯與紅蘿蔔最穩；加豆腐更像主菜"},
     {name:"馬鈴薯燉豆腐",icon:"🫕",main:"馬鈴薯",how:"燉燴",n:{p:12,ca:374,fe:5.4,vc:38,fi:5.2,kcal:260,b2:0.18},ingredients:["馬鈴薯 2顆","板豆腐 半塊","醬油 1匙","芹菜末"],note:"鉀鈣雙補日式風"},
     // ── 山藥：多種烹調方式（黏液蛋白護胃）──────────────────────
     {name:"山藥炒木耳",icon:"🍄",main:"山藥",how:"快炒",n:{p:3,ca:24,fe:2.5,vc:7,fi:4.0,kcal:95,b2:0.18},ingredients:["山藥 200g","黑木耳少許","醬油少許","薑絲少許"],note:"滑嫩清甜；黑木耳補鐵護血"},
@@ -839,8 +898,6 @@ const DISH_POOL={
     {name:"清炒珊瑚菇",icon:"🍄",main:"珊瑚菇",how:"快炒",n:{p:3,ca:3,fe:0.6,vc:0,fi:3.0,kcal:55,b2:0.28},ingredients:["珊瑚菇 150g","橄欖油","醬油少許","黑胡椒"],note:"β-葡聚醣護免疫；鮮甜低卡"},
     {name:"珊瑚菇燴豆腐",icon:"🍄",main:"珊瑚菇",how:"燉燴",n:{p:19,ca:703,fe:4.4,vc:0,fi:3.8,kcal:205,b2:0.28},ingredients:["珊瑚菇 150g","板豆腐 1塊","醬油 1匙","芹菜末"],note:"菇鮮豆香；蛋白質雙補"},
     // 豆芽菜（蔬菜類，其他蔬菜槽）
-    {name:"綠豆芽炒豆腐",icon:"🌱",main:"綠豆芽",how:"快炒",n:{p:21,ca:410,fe:5.2,vc:21,fi:3.7,kcal:215,b2:0.28},ingredients:["綠豆芽 200g","板豆腐 1塊","醬油少許","黑胡椒"],note:"雙豆蛋白；維C清熱解毒"},
-    {name:"醋溜綠豆芽",icon:"🌱",main:"綠豆芽",how:"涼拌",n:{p:5,ca:22,fe:1.6,vc:25,fi:3.1,kcal:55,b12:0.4,b2:0.16},ingredients:["綠豆芽 200g","烏醋 1匙","鹽","香油少許"],note:"清熱解毒；醋讓礦物質更好吸收"},
     {name:"醋溜黃豆芽",icon:"🌱",main:"黃豆芽",how:"涼拌",n:{p:9,ca:83,fe:2.5,vc:28,fi:3.2,kcal:75,b12:0.4,b2:0.16},ingredients:["黃豆芽 200g","烏醋 1匙","鹽","香油少許","芹菜末"],note:"大豆異黃酮；清爽開胃低卡"},
     // ── 起司絲（蛋奶類，需有實際菜色觸發庫存）─────────────────
     {name:"起司豆腐排",icon:"🧀",main:"起司絲",how:"香煎",n:{p:22,ca:870,fe:3.8,vc:0,fi:0.8,kcal:295,b12:1.0,b2:0.36},ingredients:["板豆腐 1塊","起司絲 適量","黑胡椒","橄欖油"],note:"雙鈣疊加；起司融化後香氣十足"},
@@ -892,6 +949,16 @@ const DISH_POOL={
     {name:"秋葵木耳炒",icon:"🌿",main:"秋葵",how:"快炒",n:{p:3,ca:88,fe:3.5,vc:25,fi:7.5,kcal:60,b12:1.8,b2:0.72},ingredients:["秋葵 200g","黑木耳少許","橄欖油","鹽"],note:"補鐵護胃；雙重黏液蛋白"},
     {name:"薑絲木耳炒",icon:"🍄",main:"黑木耳",cat:"菇類",how:"快炒",n:{p:3,ca:20,fe:3.8,vc:5,fi:6.5,kcal:50,b2:0.12},ingredients:["黑木耳 200g","薑絲","橄欖油","醬油少許"],note:"補鐵排毒；黑木耳血液淨化首選"},
     {name:"涼拌黑木耳",icon:"🍄",main:"黑木耳",cat:"菇類",how:"涼拌",n:{p:2,ca:18,fe:3.5,vc:4,fi:6.0,kcal:38,b2:0.12},ingredients:["黑木耳 200g","薑絲","醬油","烏醋","香油"],note:"補鐵降脂；木耳多醣抗氧化"},
+    {name:"黑木耳炒蛋",icon:"🍳",main:"黑木耳",cat:"菇類",how:"炒製",n:{p:13,ca:88,fe:4.2,vc:4,fi:5.5,kcal:145,b12:1.1,b2:0.32},ingredients:["黑木耳 150g","雞蛋 2顆","鹽","香油少許"],note:"補鐵配蛋白；口感滑脆"},
+    {name:"黑木耳燴豆腐",icon:"⬜",main:"黑木耳",cat:"菇類",how:"燉燴",n:{p:12,ca:320,fe:4.0,vc:4,fi:5.8,kcal:138,b2:0.18},ingredients:["黑木耳 150g","板豆腐 半塊","醬油少許","香油"],note:"木耳滑脆配豆腐；清爽耐吃"},
+    {name:"醋溜黑木耳",icon:"🍄",main:"黑木耳",cat:"菇類",how:"快炒",n:{p:2,ca:18,fe:3.6,vc:4,fi:6.2,kcal:42,b2:0.12},ingredients:["黑木耳 200g","烏醋 1匙","鹽","香油少許"],note:"酸香開胃；木耳爽脆更明顯"},
+    {name:"麻油黑木耳",icon:"🍄",main:"黑木耳",cat:"菇類",how:"快炒",n:{p:2,ca:20,fe:3.5,vc:4,fi:6.0,kcal:55,b2:0.12},ingredients:["黑木耳 200g","麻油 1匙","鹽","薑絲"],note:"麻油香氣溫潤；適合秋冬"}, 
+    {name:"涼拌白木耳",icon:"🤍",main:"白木耳",cat:"菇類",how:"涼拌",n:{p:1.5,ca:14,fe:0.5,vc:3,fi:4.5,kcal:32,b2:0.08},ingredients:["白木耳 1朵","烏醋 1匙","鹽少許","香油少許"],note:"滑嫩清爽；夏天很適合"},
+    {name:"白木耳番茄湯",icon:"🍅",main:"白木耳",cat:"菇類",how:"煮湯",n:{p:2,ca:18,fe:0.6,vc:18,fi:3.8,kcal:45,b2:0.09},ingredients:["白木耳 1朵","番茄 1顆","鹽少許","水"],note:"白木耳滑潤；番茄酸甜清爽"},
+    {name:"白木耳蓮藕湯",icon:"🤍",main:"白木耳",cat:"菇類",how:"燉湯",n:{p:2,ca:22,fe:0.8,vc:10,fi:4.2,kcal:58,b2:0.09},ingredients:["白木耳 1朵","蓮藕 150g","鹽少許","水"],note:"口感脆滑；很有飽足感"},
+    {name:"白木耳燉鮮奶",icon:"🥛",main:"白木耳",cat:"菇類",how:"燉煮",n:{p:7,ca:240,fe:0.6,vc:3,fi:3.5,kcal:135,b12:1.0,b2:0.28},ingredients:["白木耳 1朵","鮮奶 250ml","冰糖少許"],note:"奶香滑順；蛋奶素可用"},
+    {name:"白木耳炒蛋",icon:"🍳",main:"白木耳",cat:"菇類",how:"炒製",n:{p:12,ca:88,fe:1.2,vc:3,fi:3.2,kcal:148,b12:1.1,b2:0.31},ingredients:["白木耳 1朵","雞蛋 2顆","鹽少許"],note:"口感嫩滑；很家常"},
+
     {name:"烤蘆筍",icon:"🌿",main:"蘆筍",how:"烘烤",n:{p:4,ca:32,fe:2.2,vc:58,fi:3.6,kcal:75,b2:0.25},ingredients:["蘆筍 8支","橄欖油","鹽","黑胡椒","檸檬汁少許"],note:"烤後甘甜；葉酸維C全保留"},
     {name:"蘆筍炒豆腐",icon:"🌿",main:"蘆筍",how:"快炒",n:{p:22,ca:729,fe:5.8,vc:56,fi:4.2,kcal:245,b2:0.13},ingredients:["蘆筍 8支","板豆腐 1塊","醬油少許","黑胡椒"],note:"春季葉酸＋鈣；補充維C"},
     {name:"蘆筍豆干炒",icon:"🌿",main:"蘆筍",how:"快炒",n:{p:18,ca:358,fe:4.2,vc:56,fi:4.2,kcal:215,b2:0.13},ingredients:["蘆筍 8支","五香豆干 3片","醬油少許"],note:"春季高鈣組合；葉酸護神經"},
@@ -986,7 +1053,6 @@ const DISH_POOL={
     {name:"高麗菜味噌湯",icon:"🍵",main:"高麗菜",how:"煮湯",n:{p:5,ca:100,fe:1.0,vc:35,fi:2.0,kcal:90,b12:0.7,b2:0.56},ingredients:["高麗菜 四分之一顆","味噌 1.5匙","嫩豆腐少許","芹菜末"],note:"日式暖胃益生菌"},
     {name:"猴頭菇清湯",icon:"🦁",main:"猴頭菇",how:"煮湯",n:{p:3,ca:5,fe:0.6,vc:4,fi:4.4,kcal:45,b12:0.1,b2:0.36},ingredients:["猴頭菇 100g","芹菜 1支","鹽少許","香油"],note:"NGF護腸胃；清淡不油膩"},
     {name:"香菇豆腐湯",icon:"🍄",main:"香菇",how:"煮湯",n:{p:9,ca:355,fe:2.7,vc:0,fi:4.0,kcal:130,b12:0.1,b2:0.36},ingredients:["香菇 5朵","板豆腐 半塊","鹽少許","香油","芹菜末"],note:"維D2＋植物鈣；溫潤養身"},
-    {name:"綠豆芽豆腐湯",icon:"🌱",main:"綠豆芽",how:"煮湯",n:{p:7,ca:100,fe:1.5,vc:11,fi:1.8,kcal:80,b12:0.15,b2:0.36},ingredients:["綠豆芽 150g","嫩豆腐 半盒","鹽少許","香油"],note:"夏日清熱；低卡高維C"},
     {name:"黃豆芽味噌湯",icon:"🍵",main:"黃豆芽",how:"煮湯",n:{p:9,ca:120,fe:1.8,vc:12,fi:2.0,kcal:90,b12:0.15,b2:0.14},ingredients:["黃豆芽 150g","味噌 1.5匙","嫩豆腐少許","芹菜末"],note:"大豆異黃酮＋益生菌；護腸護骨"},
     {name:"海帶芽豆腐湯",icon:"🌊",main:"海帶芽",how:"煮湯",n:{p:8,ca:215,fe:2.0,vc:0,fi:1.2,kcal:85,b12:0.15,b2:0.14},ingredients:["海帶芽 10g（泡發）","嫩豆腐 半盒","鹽少許","芹菜末","香油"],note:"碘質補充＋植物鈣；清淡鮮甜"},
     {name:"山藥清湯",icon:"🌸",main:"山藥",how:"煮湯",n:{p:3,ca:28,fe:0.6,vc:7,fi:2.8,kcal:75,b12:0.05,b2:0.06},ingredients:["山藥 200g","紅蘿蔔 半條","鹽少許","芹菜末"],note:"黏液蛋白護胃；清甜滋補"},
@@ -1320,12 +1386,36 @@ function generateWeek(season,mode,fridgeSet){
       return safe||placeholder("其他蔬菜");
     })();
     const finalEggCat=finalEgg&&!finalEgg.isMissing&&finalEgg!==egg?"其他蔬菜":eggCat;
-    const dishArr=rescueMissingDishes([
+    let dishArr=rescueMissingDishes([
       {...leafy,cat:leafy?.cat||"葉菜"},
       {...bean,cat:bean?.cat||"豆製品"},
       {...veg,cat:veg?.cat||"其他蔬菜"},
       {...(finalEgg||placeholder("其他蔬菜")),cat:finalEgg?.cat||finalEggCat},
     ],di);
+    if(dishArr.some(d=>d&&d.cat==="豆製品"&&!d.isMissing)){
+      dishArr=dishArr.map((dish,slotIndex)=>{
+        if(!dish||dish.isMissing||dish.cat==="豆製品"||!dishHasTofuIngredient(dish))return dish;
+        const others=dishArr.filter((_,idx)=>idx!==slotIndex).filter(Boolean);
+        const usedNames=new Set(others.map(d=>d.name));
+        const usedMains=new Set(others.map(d=>d.main).filter(Boolean));
+        const usedHows=new Set(others.map(d=>d.how).filter(Boolean));
+        const eggCount=others.filter(d=>(d.ingredients||[]).some(ing=>ing.includes("雞蛋"))).length;
+        const sameCatPool=uniqueByName([...(slotPools[dish.cat]||[]),...dynamicFallbacks.filter(d=>d.cat===dish.cat)]);
+        const rank=(pool)=>pool
+          .map(d=>({dish:d,fit:matchDish(d,fridgeSet),score:scoreReplacementDish(d,others,fridgeSet,d.cat===dish.cat)}))
+          .filter(x=>!dishHasTofuIngredient(x.dish))
+          .filter(x=>!usedNames.has(x.dish.name)&&!usedMains.has(x.dish.main))
+          .filter(x=>!usedHows.has(x.dish.how))
+          .filter(x=>eggCount+(((x.dish.ingredients||[]).some(ing=>ing.includes("雞蛋")))?1:0)<=1)
+          .sort((a,b)=>{
+            const aTier=x=>x.fit.ok?0:(x.fit.missing.length<=1?1:2);
+            return aTier(a)-aTier(b) || b.score-a.score;
+          })
+          .map(x=>x.dish);
+        const replacement=rank(sameCatPool)[0]||dish;
+        return replacement;
+      });
+    }
     const soupObj={name:soup.name,ingredients:soup.ingredients||[],note:soup.note,main:soup.main,how:soup.how,n:soup.n,isMissing:soup.isMissing};
     return{day:dm.day,label:dm.label,theme,tip:[leafy.note,veg.note,bean.note].filter(Boolean).slice(0,2).join("；")||"依現有庫存安排本日菜色",nutrition:calcDayNutrition(dishArr,soupObj),fruits:fruits[di],dishes:dishArr,soup:soupObj};
   });
@@ -1470,7 +1560,26 @@ function calcDayNutrition(dishes,soup){
 // ── Garden reward system ─────────────────────────────────
 const GARDEN_KEY = "veggie_garden";
 const GARDEN_COMPLETION_KEY = "veggie_garden_completion";
+const GARDEN_PAUSE_KEY = "veggie_garden_pause_days";
 const GARDEN_SEED_LIMIT_PER_DAY = 2;
+const GARDEN_PAUSE_LABELS = { browse:'', rest:'', tomorrow:'' };
+const GARDEN_SOFT_LINES = {
+  sunny:['今天亮一點。','有一點清清的光。'],
+  partlyCloudy:['雲慢慢飄過去。','今天有一點留白。'],
+  cloudy:['今天安靜一點。','慢慢來也可以。'],
+  rainy:['先停一下，也很好。','雨落下來，花園也在。'],
+  breezy:['有一點點在流動。','風輕輕地過去了。'],
+};
+const GARDEN_REST_LINES = {
+  browse:['',''],
+  rest:['',''],
+  tomorrow:['',''],
+};
+const PLANT_FEEDBACK_LINES = {
+  seed:['今天有照顧到自己了。','先做到這裡，也很好。','你有做出一個選擇。'],
+  growing:['慢慢來，今天有前進。','不必完美，先照顧自己。','有吃、有過日子，就很好。'],
+  blooming:['這株已經開好了。','今天的心意有被接住。','你種下的，正在慢慢變成風景。'],
+};
 const GARDEN_SEASON_DAYS = 14 * 7;
 const SEASON_POOL = {
   spring: { months: [3,4,5], bonus: ['mint','beansprout','tomato'] },
@@ -1483,10 +1592,19 @@ const CATEGORY_LABELS = {
 };
 const GARDEN_TYPE_LABELS = {
   mint: '薄荷草', spinach: '菠菜叢', cabbage: '包心菜', mushroom: '蘑菇', beansprout: '豆苗藤',
-  radish: '白蘿蔔', carrot: '紅蘿蔔', tomato: '番茄', pumpkin: '南瓜', eggplant: '茄子', sunflower: '向日葵', lotus: '蓮花'
+  radish: '白蘿蔔', carrot: '紅蘿蔔', tomato: '番茄', pumpkin: '南瓜', eggplant: '茄子',
+  corn: '玉米', broccoli: '青花菜', cauliflower: '白花椰菜', bokchoy: '小白菜',
+  bellpepper: '甜椒', zucchini: '櫛瓜', sunflower: '向日葵', lotus: '蓮花'
 };
-const PLANT_VARIANTS = { mint:3, spinach:2, cabbage:2, mushroom:3, beansprout:2, radish:1, carrot:1, tomato:2, pumpkin:1, eggplant:1, sunflower:2, lotus:2 };
-const VEGGIE_TYPES = ['radish','carrot','tomato','pumpkin','eggplant'];
+const PLANT_VARIANTS = { mint:3, spinach:2, cabbage:2, mushroom:3, beansprout:2, radish:1, carrot:1, tomato:2, pumpkin:1, eggplant:1, corn:1, broccoli:2, cauliflower:2, bokchoy:2, bellpepper:2, zucchini:2, sunflower:2, lotus:2 };
+const VEGGIE_TYPES = ['radish','carrot','tomato','pumpkin','eggplant','corn','broccoli','cauliflower','cabbage','spinach','bokchoy','bellpepper','zucchini'];
+const TOFU_FAMILY_GROUPS = { '板豆腐':['板豆腐','嫩豆腐'], '嫩豆腐':['板豆腐','嫩豆腐'] };
+const TOFU_ITEMS = ['板豆腐','嫩豆腐'];
+function dishHasTofuIngredient(dish){
+  if(!dish)return false;
+  if(TOFU_ITEMS.includes(dish.main))return true;
+  return (dish.ingredients||[]).some(ig=>TOFU_ITEMS.some(name=>String(ig).includes(name)));
+}
 
 function todayISO(){
   const d = new Date();
@@ -1507,6 +1625,32 @@ function loadCompletionMap(){
 }
 function saveCompletionMap(map){
   try{localStorage.setItem(GARDEN_COMPLETION_KEY, JSON.stringify(normalizeCompletionMap(map)));}catch(e){}
+}
+function normalizePauseMap(map){
+  const raw = map && typeof map === 'object' ? map : {};
+  return Object.fromEntries(Object.entries(raw).filter(([,v])=>['browse','rest','tomorrow'].includes(v)));
+}
+function loadPauseMap(){
+  try{return normalizePauseMap(safeParse(localStorage.getItem(GARDEN_PAUSE_KEY),{}));}catch(e){return {};}
+}
+function savePauseMap(map){
+  try{localStorage.setItem(GARDEN_PAUSE_KEY, JSON.stringify(normalizePauseMap(map)));}catch(e){}
+}
+function getCompletionCount(map, iso){
+  return Math.max(0, Math.min(GARDEN_SEED_LIMIT_PER_DAY, Number(map?.[iso]) || 0));
+}
+function getCompletionStreak(map, endISO=todayISO()){
+  let streak = 0;
+  let cursor = endISO;
+  while(getCompletionCount(map, cursor) > 0){
+    streak += 1;
+    cursor = plusDays(cursor, -1);
+  }
+  return streak;
+}
+function chooseStableLine(list, seed){
+  if(!Array.isArray(list) || list.length===0) return '';
+  return list[Math.abs(seed) % list.length];
 }
 function daysBetween(a,b){
   const da = new Date(a+'T00:00:00');
@@ -1571,31 +1715,30 @@ function getTodayCategory(dishes){
   });
   return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'veggie';
 }
-function getPlantType(category, dateISO, plantCount){
+function getPlantType(category, dateISO, plantCount, existingPlants=[]){
   const dayOfYear = getDayOfYear(dateISO);
   const month = new Date(dateISO+'T00:00:00').getMonth()+1;
   const seasonKey = getSeasonNameByMonth(month);
   const pool = SEASON_POOL[seasonKey];
-  let type = 'mint';
-  if(category === 'leafy'){
-    type = ['mint','spinach','cabbage'][dayOfYear % 3];
-  }else if(category === 'mushroom'){
-    type = 'mushroom';
-  }else if(category === 'tofu'){
-    type = 'beansprout';
-  }else if(category === 'egg'){
-    type = 'sunflower';
-  }else if(category === 'soup'){
-    type = 'lotus';
-  }else{
-    type = VEGGIE_TYPES[dayOfYear % VEGGIE_TYPES.length];
-  }
-  const bonusHit = pool.bonus.includes(type) || (((dayOfYear * 17 + plantCount * 11) % 10) < 3 && category === 'veggie' && pool.bonus.some(t=>VEGGIE_TYPES.includes(t)));
-  if(category === 'veggie' && bonusHit){
-    const veggieBonus = pool.bonus.filter(t=>VEGGIE_TYPES.includes(t));
-    if(veggieBonus.length) type = veggieBonus[(dayOfYear + plantCount) % veggieBonus.length];
-  }
-  return type;
+  const recentTypes = (existingPlants||[]).slice(-7).map(p=>p.type);
+  const todayTypes = (existingPlants||[]).filter(p=>p.date===dateISO).map(p=>p.type);
+  const pickFromPool = (types, offsetSeed=0)=>{
+    const baseIndex = Math.abs((dayOfYear * 7 + plantCount * 5 + offsetSeed) % types.length);
+    const scored = types.map((type, idx)=>{
+      const todayPenalty = todayTypes.includes(type) ? 100 : 0;
+      const recentPenalty = recentTypes.includes(type) ? (recentTypes.length - recentTypes.indexOf(type)) : 0;
+      const seasonBoost = (pool?.bonus||[]).includes(type) ? -2 : 0;
+      const distance = (idx - baseIndex + types.length) % types.length;
+      return { type, score: todayPenalty + recentPenalty + distance + seasonBoost };
+    }).sort((a,b)=>a.score-b.score);
+    return scored[0]?.type || types[baseIndex];
+  };
+  if(category === 'leafy') return pickFromPool(['mint','spinach','cabbage','bokchoy'], 3);
+  if(category === 'mushroom') return 'mushroom';
+  if(category === 'tofu') return pickFromPool(['beansprout','cabbage','mint'], 5);
+  if(category === 'egg') return 'sunflower';
+  if(category === 'soup') return 'lotus';
+  return pickFromPool(VEGGIE_TYPES, 11);
 }
 function getPlantMood(dateISO){
   const n = getDayOfYear(dateISO) % 3;
@@ -1662,6 +1805,27 @@ function plantNeedsWater(plant){
 }
 function stalePlant(plant){
   return plant.lastWatered && daysBetween(plant.lastWatered, todayISO()) > 3;
+}
+function getPlantFeedback(plant){
+  const stage = getStage(plant);
+  const pool = stage >= 7 ? PLANT_FEEDBACK_LINES.blooming : stage >= 3 ? PLANT_FEEDBACK_LINES.growing : PLANT_FEEDBACK_LINES.seed;
+  return chooseStableLine(pool, getDayOfYear(plant.date) + (plant.variant||0) + stage);
+}
+function getGardenLine(scene, pauseTodayLabel){
+  if(pauseTodayLabel) return chooseStableLine(GARDEN_REST_LINES[pauseTodayLabel] || GARDEN_REST_LINES.rest, getDayOfYear(todayISO()));
+  return chooseStableLine(GARDEN_SOFT_LINES[scene.weather] || GARDEN_SOFT_LINES.sunny, getDayOfYear(todayISO()));
+}
+function getGardenVisitors(scene, streakCount, plantsCount){
+  const today = todayISO();
+  const yesterday = plusDays(today, -1);
+  const flags = {
+    butterfly: ['sunny','partlyCloudy'].includes(scene.weather) && (streakCount >= 3 || plantsCount >= 4) && getDayOfYear(today) % 3 !== 1,
+    dandelion: scene.weather === 'breezy',
+    firefly: scene.timeSegment === 'night' && streakCount >= 5 && getDayOfYear(today) % 2 === 0,
+    snail: getGardenWeather(yesterday) === 'rainy' && scene.timeSegment !== 'sunrise',
+    bird: scene.weather === 'cloudy' && streakCount >= 7 && getDayOfYear(today) % 3 === 0,
+  };
+  return flags;
 }
 function PlantSVG({ plant, allPlants }){
   const stage = getStage(plant);
@@ -1771,7 +1935,7 @@ function PlantSVG({ plant, allPlants }){
     </div>
   );
 }
-function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, confirmedTodayCount, pendingPlant, onBeginPlant, onCancelPlant, onPlantAt, onWater }){
+function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, confirmedTodayCount, pendingPlant, streakCount, pauseTodayLabel, onPauseMode, onBeginPlant, onCancelPlant, onPlantAt, onWater }){
   const today = todayISO();
   const month = new Date(today+'T00:00:00').getMonth()+1;
   const seasonKey = getSeasonNameByMonth(month);
@@ -1782,6 +1946,7 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
   const showButterfly = longestWaterStreak >= 7;
   const showBee = bloomedCount >= 10;
   const scene = getGardenScene();
+    const visitors = getGardenVisitors(scene, streakCount, plants.length);
   const handlePlotClick = (e)=>{
     if(!pendingPlant) return;
     const rect = e.currentTarget.getBoundingClientRect();
@@ -1800,6 +1965,7 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
             <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}>
               <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>{scene.weatherMeta.emoji} {scene.label}</span>
               <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>{scene.weatherMeta.emoji} {scene.weatherMeta.label}</span>
+              {streakCount>0 && <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>連續 {streakCount} 天</span>}
             </div>
           </div>
           <div style={{textAlign:'right',fontSize:13,color:'#7a866d',lineHeight:1.8,whiteSpace:'nowrap'}}>
@@ -1814,7 +1980,7 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
         <div style={{padding:'12px 14px',borderBottom:'1px solid rgba(125,147,108,0.16)',background:'linear-gradient(180deg, #f5fbf1 0%, #eef7ea 100%)'}}>
           <div style={{fontSize:14,fontWeight:700,color:'#567043',marginBottom:6}}>{pendingPlant ? '請點一下花圃，決定今天種子的落點' : '今天的花圃'}</div>
           <div style={{fontSize:12.5,color:'#7d8b71',lineHeight:1.75}}>
-            {availableSeeds>0 ? `今天已確認 ${confirmedTodayCount}/${GARDEN_SEED_LIMIT_PER_DAY} 套菜單，還可以種 ${availableSeeds} 顆種子。` : confirmedTodayCount>0 ? '今天的種子額度已用完，明天再來。' : '先把今天這桌看完，再按「今天決定做這桌菜 🌱」解鎖種子。'}
+''
           </div>
         </div>
         <div className="garden-plot" onClick={handlePlotClick} style={{position:'relative',height:'55vh',minHeight:360,overflowY:'auto',cursor:pendingPlant?'crosshair':'default',background:scene.sky}}>
@@ -1829,14 +1995,20 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
             {scene.timeSegment==='day' && <div style={{position:'absolute',right:'10%',top:'9%',fontSize:34,opacity:0.8}}>☀️</div>}
             {scene.timeSegment==='evening' && <div style={{position:'absolute',right:'9%',top:'10%',fontSize:32,opacity:0.72}}>🌇</div>}
             {scene.timeSegment==='night' && <div style={{position:'absolute',right:'10%',top:'9%',fontSize:34,opacity:0.78}}>🌙</div>}
-            {scene.weather==='partlyCloudy' && <div style={{position:'absolute',left:'12%',top:'13%',fontSize:28,opacity:0.78}}>⛅</div>}
-            {scene.weather==='cloudy' && <><div style={{position:'absolute',left:'12%',top:'14%',fontSize:28,opacity:0.78}}>☁️</div><div style={{position:'absolute',left:'27%',top:'10%',fontSize:24,opacity:0.62}}>☁️</div></>}
             {scene.weather==='rainy' && <div style={{position:'absolute',left:'11%',top:'12%',fontSize:28,opacity:0.84}}>🌧️</div>}
             {scene.weather==='breezy' && <div style={{position:'absolute',left:'11%',top:'13%',fontSize:26,opacity:0.78}}>🍃</div>}
+            {streakCount>=14 && <div style={{position:'absolute',left:0,right:0,bottom:'24%',height:'15%',background:'linear-gradient(180deg, rgba(125,150,120,0.15), rgba(109,136,103,0.26))',clipPath:'polygon(0 100%, 0 55%, 11% 42%, 22% 58%, 35% 28%, 50% 60%, 63% 33%, 78% 56%, 90% 36%, 100% 58%, 100% 100%)',pointerEvents:'none'}} />}
+            {streakCount>=7 && <div style={{position:'absolute',left:'7%',bottom:'16%',fontSize:26,opacity:0.55}}>🪴</div>}
+            {streakCount>=7 && <div style={{position:'absolute',left:'15%',bottom:'11%',fontSize:24,opacity:0.42}}>🪨</div>}
+            {pauseTodayLabel==='rest' && <div style={{position:'absolute',right:'8%',bottom:'14%',fontSize:22,opacity:0.28}}>🍂</div>}
             {plants.slice().sort((a,b)=>getDepthScale(a,plants).zIndex - getDepthScale(b,plants).zIndex).map(plant=><PlantSVG key={plant.id} plant={plant} allPlants={plants} />)}
             {pendingPlant && <div style={{position:'absolute',left:'50%',top:'18%',transform:'translateX(-50%)',padding:'10px 14px',borderRadius:999,background:'rgba(255,255,255,0.9)',boxShadow:'0 8px 18px rgba(70,90,45,0.12)',fontSize:13,fontWeight:700,color:'#597043'}}>點花圃任一位置種下今日種子 🌱</div>}
-            {showButterfly && <div className="butterfly-loop" style={{position:'absolute',left:'18%',top:'28%',fontSize:22}}>🦋</div>}
+            {visitors.butterfly && <div className="butterfly-loop" style={{position:'absolute',left:'18%',top:'28%',fontSize:22}}>🦋</div>}
             {showBee && <div className="bee-loop" style={{position:'absolute',right:'14%',top:'24%',fontSize:22}}>🐝</div>}
+            {visitors.dandelion && <><div className="seed-float" style={{left:'14%',bottom:'34%', ['--dx']:'26px', ['--dy']:'-20px'}}>✦</div><div className="seed-float" style={{left:'23%',bottom:'41%', ['--dx']:'18px', ['--dy']:'-12px', animationDelay:'0.4s'}}>✦</div></>}
+            {visitors.firefly && <><div style={{position:'absolute',left:'18%',top:'36%',fontSize:10,opacity:0.8}}>✨</div><div style={{position:'absolute',right:'24%',top:'41%',fontSize:9,opacity:0.7}}>✨</div><div style={{position:'absolute',left:'41%',top:'32%',fontSize:8,opacity:0.65}}>✨</div></>}
+            {visitors.snail && <div style={{position:'absolute',left:'12%',bottom:'9%',fontSize:18,opacity:0.64}}>🐌</div>}
+            {visitors.bird && <div style={{position:'absolute',right:'12%',bottom:'24%',fontSize:18,opacity:0.72}}>🐦</div>}
           </div>
         </div>
       </div>
@@ -1844,8 +2016,7 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
       <div style={{display:'flex',gap:8,marginBottom:12}}>
         {availableSeeds>0 && !pendingPlant && <button onClick={onBeginPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'none',background:'#5e9b47',color:'#fff',fontSize:14.5,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>種下今日的種子 🌱</button>}
         {pendingPlant && <button onClick={onCancelPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'1.5px solid #d7dfcf',background:'#fff',color:'#738169',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>先取消</button>}
-        {availableSeeds===0 && confirmedTodayCount===0 && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#f5f2eb',color:'#91897e',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天還沒確認菜單，先把今天這桌看完，再按「今天決定做這桌菜 🌱」。</div>}
-        {availableSeeds===0 && confirmedTodayCount>0 && !pendingPlant && <div style={{flex:1,padding:'12px 14px',borderRadius:14,background:'#edf8e9',color:'#5a7746',fontSize:13.5,lineHeight:1.7,textAlign:'center'}}>今天兩顆種子都已經種下，明天再來解鎖新的種子。</div>}
+        
       </div>
 
       <div className="recipe-paper" style={{borderRadius:18,padding:'13px 13px 10px'}}>
@@ -1853,9 +2024,7 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
           <div style={{fontSize:15,fontWeight:700,color:'#5a6d4a'}}>需要照顧的植物</div>
           <div style={{fontSize:12.5,color:'#97a08d'}}>今天可澆水 {waterablePlants.length} 株</div>
         </div>
-        {plants.length===0 ? (
-          <div style={{fontSize:13.5,color:'#8a8a7a',lineHeight:1.9}}>花圃還是空的。把今天這桌看完後，按「今天決定做這桌菜 🌱」就能種下第一顆種子。</div>
-        ) : (
+        {plants.length===0 ? null : (
           <div style={{display:'grid',gap:8}}>
             {plants.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(plant=>{
               const stage = getStage(plant);
@@ -1866,6 +2035,7 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:14.5,fontWeight:700,color:'#5a4d3d'}}>{GARDEN_TYPE_LABELS[plant.type] || plant.type} · 第 {stage} 階段</div>
                     <div style={{fontSize:12.5,color:'#8d8476',lineHeight:1.7}}>{plant.date} 種下 · 類別 {CATEGORY_LABELS[plant.category] || plant.category} · 已澆水 {plant.wateredCount} 次</div>
+                    <div style={{fontSize:12.5,color:'#75806a',lineHeight:1.7,marginTop:2}}>{getPlantFeedback(plant)}</div>
                   </div>
                   <button onClick={()=>onWater(plant.id)} disabled={!canWater} style={{padding:'9px 12px',borderRadius:12,border:'none',background:canWater?'#7cb8ff':'#e9edf3',color:canWater?'#fff':'#98a3b3',fontSize:13.5,fontWeight:700,cursor:canWater?'pointer':'default',fontFamily:"'Noto Sans TC'"}}>{canWater?'澆水 💧':plant.lastWatered===today?'今天澆過':'明天再來'}</button>
                 </div>
@@ -1927,6 +2097,7 @@ function App(){
 
   const [gardenData,setGardenData]=useState(()=>loadGardenData());
   const [gardenCompletion,setGardenCompletion]=useState(()=>loadCompletionMap());
+  const [gardenPauseDays,setGardenPauseDays]=useState(()=>loadPauseMap());
   const [pendingPlant,setPendingPlant]=useState(false);
 
   const sc=SEASONS[season];
@@ -2001,6 +2172,9 @@ function App(){
   useEffect(()=>{
     saveCompletionMap(gardenCompletion);
   },[gardenCompletion]);
+  useEffect(()=>{
+    savePauseMap(gardenPauseDays);
+  },[gardenPauseDays]);
 
   // 為任意食材動態產生七天烹調方法（無預設方案時使用）
   const buildGenericMethods=(name)=>[
@@ -2244,6 +2418,8 @@ function App(){
   const confirmedTodayCount=Math.max(0, Math.min(GARDEN_SEED_LIMIT_PER_DAY, Number(gardenCompletion[todayKey]) || 0));
   const plantedTodayCount=gardenData.plants.filter(p=>p.date===todayKey).length;
   const availableSeeds=Math.max(0, confirmedTodayCount - plantedTodayCount);
+  const pauseTodayLabel=gardenPauseDays[todayKey] || null;
+  const streakCount=getCompletionStreak(gardenCompletion, todayKey);
   const menuStoryFinished=menuStoryReady && menuStoryStep===menuStoryCards.length-1;
   const gardenPlants=useMemo(()=>gardenData.plants.map(p=>{
     const nextStage=getStage(p);
@@ -2271,6 +2447,20 @@ function App(){
       saveCompletionMap(next);
       return next;
     });
+    setGardenPauseDays(prev=>{
+      if(!prev[todayKey]) return prev;
+      const next={...prev};
+      delete next[todayKey];
+      savePauseMap(next);
+      return next;
+    });
+  };
+  const handlePauseMode=(mode)=>{
+    setGardenPauseDays(prev=>{
+      const next={...prev,[todayKey]:mode};
+      savePauseMap(next);
+      return next;
+    });
   };
   const handleBeginPlant=()=>{
     if(availableSeeds<=0)return;
@@ -2281,7 +2471,7 @@ function App(){
     if(availableSeeds<=0)return;
     const date=todayISO();
     const category=selectedDayCategory;
-    const type=getPlantType(category,date,gardenData.plants.length);
+    const type=getPlantType(category,date,gardenData.plants.length,gardenData.plants);
     const variantCount=PLANT_VARIANTS[type]||1;
     const variant=(getDayOfYear(date)+gardenData.plants.length)%variantCount;
     const mood=getPlantMood(date);
@@ -2304,6 +2494,23 @@ function App(){
       })
     }));
   };
+  const normalizeTofuText=(s='')=>String(s).replace(/蕃茄/g,'番茄').replace(/板豆腐|嫩豆腐/g,'豆腐').replace(/燒嫩豆腐/g,'燒豆腐').replace(/豆腐 半塊|豆腐 1塊|豆腐 半盒|豆腐 1盒/g,'豆腐');
+  const dishVariantSignature=(dish)=>{
+    const normalizedName=normalizeTofuText(dish?.name||'');
+    const normalizedMain=normalizeTofuText(dish?.main||'');
+    const normalizedHow=dish?.how||'';
+    const normalizedIngredients=(dish?.ingredients||[]).map(normalizeTofuText).join('|');
+    return `${normalizedName}__${normalizedMain}__${normalizedHow}__${normalizedIngredients}`;
+  };
+  const dedupeDishVariants=(arr=[])=>{
+    const seen=new Set();
+    return arr.filter(d=>{
+      const sig=dishVariantSignature(d);
+      if(seen.has(sig)) return false;
+      seen.add(sig);
+      return true;
+    });
+  };
   const getSwitchCandidates=(baseDish,activeDish)=>{
     if(activeDish.isMissing)return[];
     const hasEggNow=fridge.has("雞蛋");
@@ -2312,31 +2519,40 @@ function App(){
     const originalDish=baseDish;
     if(activeDish.isReplaced&&activeDish.surplusFrom){
       const methods=(getSurplusData(activeDish.surplusFrom).methods||[]).filter(notSoup);
-      return eggFilter(methods).slice(0,7);
+      return dedupeDishVariants(eggFilter(methods))
+        .filter(d=>dishVariantSignature(d)!==dishVariantSignature(activeDish))
+        .slice(0,7);
     }
     if(!originalDish||!originalDish.main)return[];
-    const pool=(DISH_POOL[originalDish.cat]||[]).filter(notSoup);
-    const allCandidates=eggFilter(pool.filter(d=>d.main===originalDish.main));
-    const withOriginal=!allCandidates.find(c=>c.name===originalDish.name)
-      ?[originalDish,...allCandidates]
-      :allCandidates;
-    return withOriginal.slice(0,7);
+    const globalPool=Object.values(DISH_POOL).flat().filter(notSoup);
+    const currentSig=dishVariantSignature(activeDish||originalDish);
+    const relatedMainSet = TOFU_FAMILY_GROUPS[originalDish.main] ? new Set(TOFU_FAMILY_GROUPS[originalDish.main]) : null;
+    const sameMain = globalPool.filter(d=>d.main===originalDish.main);
+    const relatedFamily = relatedMainSet ? globalPool.filter(d=>relatedMainSet.has(d.main)) : [];
+    return eggFilter(dedupeDishVariants([...sameMain, ...relatedFamily]))
+      .filter(d=>dishVariantSignature(d)!==currentSig)
+      .slice(0,7);
   };
-  // 靈感參考：同 cat 中缺 1 樣食材的菜（不限主食材是否在冰箱）
-  const getInspirationCandidates=(dish)=>{
+  // 靈感參考：以同主食材為主，只缺 1 樣就能成立，避免跳成別的菜
+  const getInspirationCandidates=(dish,excludeDishes=[])=>{
     if(!dish||!dish.cat||dish.isMissing)return[];
     const hasEggNow=fridge.has("雞蛋");
+    const excludedSignatures=new Set((excludeDishes||[]).map(d=>typeof d==="string"?d:dishVariantSignature(d)));
     const pool=(DISH_POOL[dish.cat]||[]);
+    const relatedMainSet = TOFU_FAMILY_GROUPS[dish.main] ? new Set(TOFU_FAMILY_GROUPS[dish.main]) : null;
     return pool
-      .map(d=>({dish:d,fit:matchDish(d,fridge)}))
+      .map(d=>({dish:d,fit:matchDish(d,fridge),sig:dishVariantSignature(d)}))
       .filter(x=>
-        x.fit.missing.length===1&&          // 只缺1樣
-        x.dish.main!==dish.main&&           // 不同食材（同食材的用 switchCandidates）
+        x.fit.missing.length===1&&
+        x.dish.name!==dish.name&&
+        !excludedSignatures.has(x.sig)&&
+        (x.dish.main===dish.main || (relatedMainSet&&relatedMainSet.has(x.dish.main)))&&
         (hasEggNow||!(x.dish.ingredients||[]).some(ig=>ig.includes("雞蛋")))
       )
       .sort((a,b)=>b.fit.exactHits.length-a.fit.exactHits.length)
-      .slice(0,3)
-      .map(x=>({...x.dish,missingItem:x.fit.missing[0]}));
+      .map(x=>({...x.dish,missingItem:x.fit.missing[0]}))
+      .filter((dish,idx,arr)=>arr.findIndex(d=>dishVariantSignature(d)===dishVariantSignature(dish))===idx)
+      .slice(0,3);
   };
 
   const renderDishCard=(dish,i,mode="grid")=>{
@@ -2347,8 +2563,10 @@ function App(){
     const sc2=activeDish.isReplaced?getSurplusData(activeDish.surplusFrom).color:null;
     const isExpanded=activeDishCard===i;
     const switchCandidates=getSwitchCandidates(dish,activeDish);
-    const inspirationCandidates=(!activeDish.isMissing&&!activeDish.isReplaced)?getInspirationCandidates(dish):[];
-    const altCount=Math.max(0,switchCandidates.length-1);
+    const inspirationCandidates=(!activeDish.isMissing&&!activeDish.isReplaced)
+      ?getInspirationCandidates(dish,switchCandidates)
+      :[];
+    const altCount=switchCandidates.length;
     const isStory=mode==="story";
     const titleSize=isStory?48:43;
     const _mc=activeDish.isMissing?{sticky:"#fff8e1",pin:"#ffa726"}:getMainColor(activeDish.main,cs);
@@ -2468,16 +2686,15 @@ function App(){
                 <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
                   {switchCandidates.map(alt=>{
                     const isActive=activeDish.name===alt.name;
-                    const isOriginal=!userOverrides[overrideKey]&&alt.name===dish.name;
                     return(
                       <button key={alt.name} onClick={()=>setOverride(dayIdx,i,{...alt,cat:activeDish.cat})}
                         className="menu-chooser"
                         style={{padding:"5px 11px",borderRadius:12,cursor:"pointer",
-                          background:isActive?"#e8f5e9":isOriginal?"#f3e5f5":"#f5f5f5",
-                          color:isActive?"#2e7d32":isOriginal?"#7c4dff":"#555",
-                          border:`1px solid ${isActive?"#a5d6a7":isOriginal?"#ce93d8":"#ddd"}`,
+                          background:isActive?"#e8f5e9":"#f5f5f5",
+                          color:isActive?"#2e7d32":"#555",
+                          border:`1px solid ${isActive?"#a5d6a7":"#ddd"}`,
                           fontWeight:isActive?700:400}}>
-                        {alt.name}{isOriginal&&" ↩"}
+                        {alt.name}
                       </button>
                     );
                   })}
@@ -3337,6 +3554,7 @@ function App(){
                   <div style={{display:'grid',gap:8,marginTop:10}}>
                     <button onClick={confirmTodayMenu} disabled={confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY} style={{padding:'12px 14px',borderRadius:12,background:confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'#eef1e8':'#5e9b47',color:confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'#9aa38d':'#fff',fontSize:14.5,fontWeight:700,border:'none',cursor:confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'default':'pointer',fontFamily:"'Noto Sans TC'"}}>今天決定做這桌菜 🌱</button>
                     <div style={{padding:'10px 12px',borderRadius:12,background:'#f8f5ef',fontSize:12.8,color:'#817866',lineHeight:1.75}}>{confirmedTodayCount>=GARDEN_SEED_LIMIT_PER_DAY?'今天已確認 2/2 套菜單，明天再來。':`今天已確認 ${confirmedTodayCount}/2 套，確認後可解鎖第 ${Math.min(2, confirmedTodayCount+1)} 顆種子。`}</div>
+                    {pauseTodayLabel && <div style={{padding:'10px 12px',borderRadius:12,background:'#fbf7f1',fontSize:12.8,color:'#867a6d',lineHeight:1.75}}>{chooseStableLine(GARDEN_REST_LINES[pauseTodayLabel] || GARDEN_REST_LINES.rest, getDayOfYear(todayKey)+1)}</div>}
                   </div>
                 )}
               </div>
@@ -3865,6 +4083,9 @@ function App(){
           plantedTodayCount={plantedTodayCount}
           confirmedTodayCount={confirmedTodayCount}
           pendingPlant={pendingPlant}
+          streakCount={streakCount}
+          pauseTodayLabel={pauseTodayLabel}
+          onPauseMode={handlePauseMode}
           onBeginPlant={handleBeginPlant}
           onCancelPlant={()=>setPendingPlant(false)}
           onPlantAt={handlePlantAt}
