@@ -666,15 +666,22 @@ const shiftHex=(hex,shift)=>{
 
 const DAILY_FREQ=["protein","vitC","fiber"];   // 每日嚴格追蹤
 // ── TypewriterText：逐字顯示 ──────────────────────────────────────────
-function TypewriterText({text,speed=58}){
+function TypewriterText({text,speed=58,delay=0}){
   const [shown,setShown]=React.useState("");
   React.useEffect(()=>{
     setShown("");
     if(!text)return;
     let i=0;
-    const iv=window.setInterval(()=>{i++;setShown(text.slice(0,i));if(i>=text.length)window.clearInterval(iv);},speed);
-    return()=>window.clearInterval(iv);
-  },[text]);
+    let iv=null;
+    const starter=window.setTimeout(()=>{
+      iv=window.setInterval(()=>{
+        i++;
+        setShown(text.slice(0,i));
+        if(i>=text.length)window.clearInterval(iv);
+      },speed);
+    },delay);
+    return()=>{window.clearTimeout(starter); if(iv) window.clearInterval(iv);};
+  },[text,speed,delay]);
   return React.createElement(React.Fragment,null,shown);
 }
 const normalizeIngredientInput=(value)=>value.replace(/\u3000/g," ").replace(/\s+/g," ").trim();
@@ -2061,6 +2068,7 @@ function App(){
   const [introPhase,setIntroPhase]=useState(0);
   const [fridgeScenePhase,setFridgeScenePhase]=useState(0);
   const [menuScenePhase,setMenuScenePhase]=useState(0);
+  const [skipMenuEntranceOnce,setSkipMenuEntranceOnce]=useState(false);
   const [surplus,  setSurplus] =useState([]);
   const [pendingSurplus, setPendingSurplus]=useState([]);
   const [fridge,   setFridge]  =useState(new Set());
@@ -2148,13 +2156,18 @@ function App(){
   },[view,fridgeStep]);
   useEffect(()=>{
     if(view!=="menu")return;
+    if(skipMenuEntranceOnce){
+      setMenuScenePhase(2);
+      setSkipMenuEntranceOnce(false);
+      return;
+    }
     setMenuScenePhase(0);
     const timers=[
       window.setTimeout(()=>setMenuScenePhase(1),100),
       window.setTimeout(()=>setMenuScenePhase(2),320),
     ];
     return()=>timers.forEach(t=>window.clearTimeout(t));
-  },[view,dayIdx,menuStoryStep,showMenuOverview,menuStoryReady]);
+  },[view,dayIdx,menuStoryStep,showMenuOverview,menuStoryReady,skipMenuEntranceOnce]);
   useEffect(()=>{
     if(view!=="menu")return;
     setMenuStoryReady(false);
@@ -2656,7 +2669,7 @@ function App(){
         {!activeDish.isMissing&&(
           <div className="menu-card-body">
             {isStory&&<div style={{marginBottom:10,display:"flex",justifyContent:"center"}}>{renderMenuFoodIcon(activeDish.cat)}</div>}
-            <div className="menu-dish-title" style={{fontSize:titleSize,marginBottom:10,color:"#1a1a1a",textAlign:isStory?"center":"left",minHeight:isStory?0:92}}>{isStory?<TypewriterText text={activeDish.name} speed={58}/>:activeDish.name}</div>
+            <div className="menu-dish-title" style={{fontSize:titleSize,marginBottom:10,color:"#1a1a1a",textAlign:isStory?"center":"left",minHeight:isStory?0:92}}>{isStory?<TypewriterText text={activeDish.name} speed={165} delay={1580}/>:activeDish.name}</div>
             {activeDish.how&&<div className="menu-meta" style={{fontSize:isStory?13.5:12.5,marginBottom:8,lineHeight:1.2,textAlign:isStory?"center":"left"}}>{activeDish.how}</div>}
             <div style={{marginBottom:7}}>
               {(activeDish.ingredients||[]).map((ing,j)=>{
@@ -2781,7 +2794,7 @@ function App(){
           <div style={{display:"flex",alignItems:isStory?"center":"flex-start",gap:isStory?0:8,marginBottom:6,flexWrap:"wrap",flexDirection:isStory?"column":"row"}}>
             {!isStory&&<span style={{fontSize:11,fontWeight:700,color:soupPin,fontFamily:"'Noto Sans TC',sans-serif",letterSpacing:"0.06em"}}>湯品</span>}
             {isStory&&<span className="menu-chip" style={{color:sc.tab,background:sc.light,fontWeight:700,marginBottom:6}}>湯品</span>}
-            <span className="menu-dish-title" style={{fontSize:isStory?40:36,lineHeight:1.08,color:isStory?sc.tab:"#2a2018",textAlign:isStory?"center":"left",minHeight:0}}>{safeSoup.name}</span>
+            <span className="menu-dish-title" style={{fontSize:isStory?40:36,lineHeight:1.08,color:isStory?sc.tab:"#2a2018",textAlign:isStory?"center":"left",minHeight:0}}>{isStory?<TypewriterText text={safeSoup.name} speed={165} delay={1580}/>:safeSoup.name}</span>
           </div>
           <div style={{marginBottom:5,textAlign:isStory?"center":"left"}}>
             {safeSoup.ingredients.map((ing,j)=>{
@@ -3004,10 +3017,10 @@ function App(){
           transform-origin:center center;
         }
         .menu-sheet-forward{
-          animation:menuPageForward .5s cubic-bezier(.24,.8,.22,1);
+          animation:menuPageForward 1.52s cubic-bezier(.18,.74,.22,1);
         }
         .menu-sheet-backward{
-          animation:menuPageBackward .5s cubic-bezier(.24,.8,.22,1);
+          animation:menuPageBackward 1.52s cubic-bezier(.18,.74,.22,1);
         }
         .menu-chooser{
           font-family:'Noto Sans TC',sans-serif;
@@ -3155,14 +3168,20 @@ function App(){
           100%{opacity:1;transform:translateX(0) rotateY(0deg) rotateX(0deg) scale(1);}
         }
         @keyframes menuPageForward{
-          0%{opacity:0;transform:translateX(24px) rotateY(-12deg) scale(.985);}
-          55%{opacity:1;transform:translateX(-2px) rotateY(3deg) scale(1.003);}
-          100%{opacity:1;transform:translateX(0) rotateY(0) scale(1);}
+          0%{opacity:0;transform:translateY(-96px) scale(.996);clip-path:inset(0 0 100% 0 round 16px);filter:blur(.55px);}
+          14%{opacity:.46;transform:translateY(-80px) scale(.997);clip-path:inset(0 0 84% 0 round 16px);filter:blur(.42px);}
+          34%{opacity:.78;transform:translateY(-52px) scale(.998);clip-path:inset(0 0 58% 0 round 16px);filter:blur(.28px);}
+          58%{opacity:.94;transform:translateY(-24px) scale(1);clip-path:inset(0 0 28% 0 round 16px);filter:blur(.12px);}
+          82%{opacity:1;transform:translateY(-8px) scale(1);clip-path:inset(0 0 8% 0 round 16px);filter:blur(0);}
+          100%{opacity:1;transform:translateY(0) scale(1);clip-path:inset(0 0 0 0 round 16px);filter:blur(0);}
         }
         @keyframes menuPageBackward{
-          0%{opacity:0;transform:translateX(-24px) rotateY(12deg) scale(.985);}
-          55%{opacity:1;transform:translateX(2px) rotateY(-3deg) scale(1.003);}
-          100%{opacity:1;transform:translateX(0) rotateY(0) scale(1);}
+          0%{opacity:0;transform:translateY(-96px) scale(.996);clip-path:inset(0 0 100% 0 round 16px);filter:blur(.55px);}
+          14%{opacity:.46;transform:translateY(-80px) scale(.997);clip-path:inset(0 0 84% 0 round 16px);filter:blur(.42px);}
+          34%{opacity:.78;transform:translateY(-52px) scale(.998);clip-path:inset(0 0 58% 0 round 16px);filter:blur(.28px);}
+          58%{opacity:.94;transform:translateY(-24px) scale(1);clip-path:inset(0 0 28% 0 round 16px);filter:blur(.12px);}
+          82%{opacity:1;transform:translateY(-8px) scale(1);clip-path:inset(0 0 8% 0 round 16px);filter:blur(0);}
+          100%{opacity:1;transform:translateY(0) scale(1);clip-path:inset(0 0 0 0 round 16px);filter:blur(0);}
         }
         @keyframes fadeSlide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
         .btn-jp{
@@ -3210,12 +3229,14 @@ function App(){
         }
         .wizard-suck{animation:wizardSuckUp .54s cubic-bezier(.5,.05,.7,.2) forwards!important;transform-origin:center 25%!important;}
         @keyframes wizardSuckDown{
-          0%  {opacity:1;transform:scale(1) translateY(0) rotate(0deg);}
-          30% {opacity:.9;transform:scale(.88) translateY(18px) rotate(1deg);}
-          70% {opacity:.35;transform:scale(.38) translateY(120px) rotate(-2deg);}
-          100%{opacity:0;transform:scale(.08) translateY(220px) rotate(3deg);}
+          0%  {opacity:1;clip-path:inset(0 0 0 0 round 18px);transform:translate3d(0,0,0) scaleX(1) scaleY(1);filter:blur(0);}
+          20% {opacity:1;clip-path:inset(0 0 0 0 round 18px);transform:translate3d(0,120px,0) scaleX(1) scaleY(1);filter:blur(0);}
+          46% {opacity:1;clip-path:inset(0 0 0 0 round 18px);transform:translate3d(0,320px,0) scaleX(.995) scaleY(.98);filter:blur(.02px);}
+          68% {opacity:.99;clip-path:inset(18% 0 0 0 round 18px);transform:translate3d(0,540px,0) scaleX(.95) scaleY(.82);filter:blur(.08px);}
+          84% {opacity:.96;clip-path:inset(52% 0 0 0 round 18px);transform:translate3d(0,700px,0) scaleX(.84) scaleY(.46);filter:blur(.22px);}
+          100%{opacity:0;clip-path:inset(90% 0 0 0 round 18px);transform:translate3d(0,860px,0) scaleX(.62) scaleY(.10);filter:blur(.65px);}
         }
-        .wizard-suck-down{animation:wizardSuckDown .58s cubic-bezier(.55,.06,.68,.19) forwards!important;transform-origin:center 60%!important;}
+        .wizard-suck-down{animation:wizardSuckDown 3.25s cubic-bezier(.16,.78,.2,1) forwards!important;transform-origin:center bottom!important;will-change:transform,opacity,clip-path!important;}
         @keyframes fridgePulseKf{
           0%  {transform:scale(1);}
           18% {transform:scale(2.1);}
@@ -3224,7 +3245,7 @@ function App(){
           82% {transform:scale(.93);}
           100%{transform:scale(1);}
         }
-        .fridge-pulse{animation:fridgePulseKf .68s cubic-bezier(.22,.78,.22,1);}
+        .fridge-pulse{animation:fridgePulseKf 1.18s cubic-bezier(.22,.78,.22,1);}
         @keyframes iceFloat{
           0%  {opacity:1;transform:translateY(0) scale(1) rotate(0deg);}
           28% {opacity:1;transform:translateY(-55px) scale(1.35) rotate(-18deg);}
@@ -3805,12 +3826,12 @@ function App(){
       {/* ════ FRIDGE VIEW ════ */}
       {view==="fridge"&&(
         <div style={{padding:"13px 13px 100px"}}>
-          <div style={{position:"relative"}} className={`wizard-stage fridge-scene-card ${fridgeScenePhase>=1?"is-on":""}`}>
+          <div style={{position:"relative"}} className={`${isStepSurplus?"fridge-scene-card":"wizard-stage fridge-scene-card"} ${fridgeScenePhase>=1?"is-on":""}`}>
             {cardSucking&&(
               <div className="ice-particle" style={{left:"50%",top:"30%",transform:"translateX(-50%)"}}>🧊</div>
             )}
             {isStepSurplus?(
-              <div key="step-surplus" className={`recipe-paper wizard-card ${cardSuckingDown?"wizard-suck-down":fridgeStepMotion==="forward"?"wizard-forward":"wizard-backward"}`} style={{borderRadius:18,overflow:"hidden"}}>
+              <div key="step-surplus" style={{position:"relative",borderRadius:18,overflow:"hidden",background:"#fffdf9",boxShadow:"0 14px 34px rgba(0,0,0,0.07)",border:"1px solid rgba(140,120,95,0.10)",animation:"none"}}>
                 <div style={{background:"linear-gradient(180deg,#fff8e1,rgba(255,255,255,0.8))",padding:"16px 16px 14px",borderBottom:"2px solid #ffe082"}}>
                   <div className="warm-script" style={{fontSize:34,fontWeight:400,marginBottom:6,color:"#5a4a30",lineHeight:1.18}}>哪樣備料太多？</div>
                   <div style={{fontSize:15,color:"#7a6a58",fontFamily:"'Noto Sans TC',sans-serif",fontWeight:300,lineHeight:1.6}}>點選後，菜單這週優先幫你用掉</div>
@@ -3840,7 +3861,7 @@ function App(){
                   )}
                   <div style={{display:"flex",gap:8}}>
                     <button onClick={()=>goFridgeStep(-1)} style={{padding:"11px 14px",borderRadius:12,background:"#fff",color:"#7a6a58",fontSize:14,fontWeight:700,border:"1.5px solid #e8e0d6",cursor:"pointer",fontFamily:"'Noto Sans TC'"}}>上一步</button>
-                    <button onClick={()=>{setCardSuckingDown(true);window.setTimeout(()=>{setSurplus(pendingSurplus);setMenuSeed("auto");setDayIdx(0);setMenuStoryStep(0);setShowMenuOverview(false);setView("menu");setCardSuckingDown(false);},550);}} style={{flex:1,padding:"11px 14px",borderRadius:12,background:"#2e7d32",color:"#fff",fontSize:14.5,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"'Noto Sans TC'"}}>
+                    <button onClick={()=>{setSurplus(pendingSurplus);setMenuSeed("auto");setDayIdx(0);setMenuStoryStep(0);setShowMenuOverview(false);setView("menu");setCardSuckingDown(false);}} style={{flex:1,padding:"11px 14px",borderRadius:12,background:"#2e7d32",color:"#fff",fontSize:14.5,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"'Noto Sans TC'"}}>
                       {pendingSurplus.length>0?`排進菜單（${pendingSurplus.length} 樣）`:"直接看菜單"}
                     </button>
                   </div>
@@ -3883,7 +3904,7 @@ function App(){
                       {fridgeStep===FRIDGE_CATS.length-1?"接著問備料 →":"下一步"}
                     </button>
                   ):(
-                    <button onClick={()=>{setCardSuckingDown(true);window.setTimeout(()=>{setSurplus(pendingSurplus);setMenuSeed("auto");setDayIdx(0);setMenuStoryStep(0);setShowMenuOverview(false);setView("menu");setCardSuckingDown(false);},550);}} style={{flex:1,padding:"11px 14px",borderRadius:12,background:"#2e7d32",color:"#fff",fontSize:14.5,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"'Noto Sans TC'"}}>
+                    <button onClick={()=>{setSurplus(pendingSurplus);setMenuSeed("auto");setDayIdx(0);setMenuStoryStep(0);setShowMenuOverview(false);setView("menu");setCardSuckingDown(false);}} style={{flex:1,padding:"11px 14px",borderRadius:12,background:"#2e7d32",color:"#fff",fontSize:14.5,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"'Noto Sans TC'"}}>
                       {pendingSurplus.length>0?`排進菜單（${pendingSurplus.length} 樣）`:"直接看菜單"}
                     </button>
                   )}
@@ -4033,7 +4054,7 @@ function App(){
 
                     {/* 更新菜單按鈕 */}
           <div style={{padding:"11px 13px 2px"}}>
-            <button onClick={()=>{setSurplus(pendingSurplus);setDayIdx(0);setView("menu");}} style={{
+            <button onClick={()=>{setSurplus(pendingSurplus);setDayIdx(0);setSkipMenuEntranceOnce(true);setView("menu");}} style={{
               width:"100%",padding:"13px",borderRadius:12,
               background:pendingSurplus.length>0?"#e65100":"#e0d8cc",
               color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",
@@ -4048,7 +4069,7 @@ function App(){
             <>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:9}}>
                 <div style={{fontSize:13.5,fontWeight:700,color:"#e65100"}}>已選 {surplus.length} 種 → 七天輪替</div>
-                <button onClick={()=>{setDayIdx(0);setView("menu");}} style={{fontSize:12,color:sc.tab,background:sc.light,border:"1px solid "+sc.cardBorder,borderRadius:9,padding:"5px 11px",cursor:"pointer",fontWeight:700}}>→ 看更新後菜單</button>
+                <button onClick={()=>{setDayIdx(0);setSkipMenuEntranceOnce(true);setView("menu");}} style={{fontSize:12,color:sc.tab,background:sc.light,border:"1px solid "+sc.cardBorder,borderRadius:9,padding:"5px 11px",cursor:"pointer",fontWeight:700}}>→ 看更新後菜單</button>
               </div>
               {surplus.map(name=>{
                 const s=getSurplusData(name);
