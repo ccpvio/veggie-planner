@@ -16,7 +16,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
 </head>
-<body style="margin:0;background:#fdf8f6;">
+<body style="margin:0;background:#fffaf8;">
 <div id="root"></div>
 <script>
 window.onerror=function(m,s,l){
@@ -1758,10 +1758,10 @@ function getGardenScene(date=new Date()){
   const timeSegment = getTimeSegment(date);
   const weather = getGardenWeather(todayISO());
   const byTime = {
-    sunrise: { label:'日出', sky:'linear-gradient(180deg, #ffd6b6 0%, #ffe9cf 24%, #dff2ff 55%, #d8efcf 100%)', haze:'rgba(255,255,255,0.22)', hill:'#dceccf', ground:'#cfe8bf' },
-    day: { label:'白天', sky:'linear-gradient(180deg, #bfe6ff 0%, #effaff 34%, #d9f1cf 35%, #cfe8bf 100%)', haze:'rgba(255,255,255,0.18)', hill:'#daf0d1', ground:'#cfe8bf' },
-    evening: { label:'傍晚', sky:'linear-gradient(180deg, #ffd1af 0%, #f5d4e9 30%, #d9e8ff 58%, #d4ebc2 100%)', haze:'rgba(255,244,230,0.18)', hill:'#d9e6c8', ground:'#c6ddb3' },
-    night: { label:'晚上', sky:'linear-gradient(180deg, #1f3158 0%, #2f4675 34%, #6e8aa3 58%, #b8d5b3 100%)', haze:'rgba(255,255,255,0.08)', hill:'#a7c3a0', ground:'#abc89d' },
+    sunrise: { label:'日出', sky:'linear-gradient(180deg, #f8d6c9 0%, #fee8d9 22%, #e7f1f7 54%, #dcead2 100%)', haze:'rgba(255,255,255,0.24)', hill:'#dfead7', ground:'#d2e4c6' },
+    day: { label:'白天', sky:'linear-gradient(180deg, #d2e7f2 0%, #eef8fb 32%, #e6f2df 60%, #d7e8c8 100%)', haze:'rgba(255,255,255,0.18)', hill:'#dbe9d4', ground:'#d2e3c4' },
+    evening: { label:'傍晚', sky:'linear-gradient(180deg, #f5d1c3 0%, #ebd4e7 28%, #dbe5f2 58%, #d5e3c5 100%)', haze:'rgba(255,244,230,0.2)', hill:'#d8e2cb', ground:'#cad9ba' },
+    night: { label:'晚上', sky:'linear-gradient(180deg, #344768 0%, #506785 34%, #8ea4b0 60%, #bfd3bb 100%)', haze:'rgba(255,255,255,0.08)', hill:'#b3c8ad', ground:'#b6cfad' },
   };
   const weatherMap = {
     sunny:{ label:'晴天', overlay:'rgba(255,220,140,0.13)', emoji:'☀️' },
@@ -1830,78 +1830,93 @@ function getGardenVisitors(scene, streakCount, plantsCount){
 function PlantSVG({ plant, allPlants }){
   const stage = getStage(plant);
   const stale = stalePlant(plant);
-  const leaf = stale ? '#c8c27a' : (plant.category==='leafy' ? '#6ea95b' : '#61a94f');
-  const leaf2 = stale ? '#d9d59a' : '#8ac76d';
-  const stem = stale ? '#8a8d4f' : '#5e9b47';
-  const earth = '#6b4226';
-  const bloom = plant.type==='sunflower' ? '#f7c948'
-    : plant.type==='tomato' ? '#e0554f'
-    : plant.type==='eggplant' ? '#7e57c2'
-    : plant.type==='pumpkin' ? '#f39c35'
-    : plant.type==='lotus' ? '#f6b9cc'
-    : plant.type==='mushroom' ? '#c88b6a'
-    : '#6fcf97';
-  const fruit = plant.type==='carrot' ? '#f18b2d'
-    : plant.type==='radish' ? '#fff2f2'
-    : plant.type==='pumpkin' ? '#d97d22'
-    : plant.type==='tomato' ? '#d94c45'
-    : plant.type==='eggplant' ? '#5f3ca6'
+  const variant = plant.variant || 0;
+  const tone = variant % 3;
+  const leaf = stale ? '#c9c387' : (plant.category==='leafy' ? (tone===0?'#7fbf84':tone===1?'#8ec78c':'#73b582') : (tone===0?'#7fbf76':tone===1?'#8abc75':'#73a96f'));
+  const leaf2 = stale ? '#ddd6aa' : (tone===0?'#b8e2a8':tone===1?'#c6e8b8':'#a8d79f');
+  const stem = stale ? '#97965f' : (tone===1?'#7da86f':'#739c67');
+  const earth = '#8d664a';
+  const bloom = plant.type==='sunflower' ? '#f5d97a'
+    : plant.type==='tomato' ? '#ef8b85'
+    : plant.type==='eggplant' ? '#a38ad6'
+    : plant.type==='pumpkin' ? '#efb170'
+    : plant.type==='lotus' ? '#f4c3d4'
+    : plant.type==='mushroom' ? '#d9b299'
+    : '#9fdcb2';
+  const fruit = plant.type==='carrot' ? '#f2a66f'
+    : plant.type==='radish' ? '#fff5f5'
+    : plant.type==='pumpkin' ? '#e59a57'
+    : plant.type==='tomato' ? '#e97770'
+    : plant.type==='eggplant' ? '#8b6bc8'
     : bloom;
   const depth = getDepthScale(plant, allPlants);
   const seedParticles = stage>=8 ? [
     {dx:-14,dy:-18,d:0},{dx:18,dy:-22,d:.15},{dx:9,dy:-32,d:.3}
   ] : [];
-  const varShift = (plant.variant||0) * 2;
+  const sway = (variant-1) * 2.5;
+  const leafSpread = tone===2 ? 1.08 : tone===1 ? 0.96 : 1;
+  const bloomLift = tone===1 ? -1.5 : tone===2 ? 1.2 : 0;
   return (
-    <div className={stage>=7?"plant-bloomed":""} style={{position:'absolute',left:`${plant.x*100}%`,bottom:`${Math.max(6,(1-plant.y)*20)}%`,transform:`translateX(-50%) scale(${depth.scale})`,opacity:depth.opacity,zIndex:depth.zIndex,width:72,height:120,pointerEvents:'none'}}>
-      <svg viewBox="0 0 60 100" style={{width:'100%',height:'100%',overflow:'visible'}}>
-        {stage===1 && <ellipse cx="30" cy="90" rx={8+varShift*0.4} ry="4" fill={earth} />}
-        {stage>=2 && <line x1="30" y1="85" x2="30" y2={stage>=5?40:80-stage*4} stroke={stem} strokeWidth={stage>=5?4:3} strokeLinecap="round" />}
-        {stage>=2 && <path d="M30 79 Q31 77 33 76" fill="none" stroke={leaf2} strokeWidth="2.4" strokeLinecap="round" />}
+    <div className={stage>=7?"plant-bloomed":"plant-soft"} style={{position:'absolute',left:`${plant.x*100}%`,bottom:`${Math.max(6,(1-plant.y)*20)}%`,transform:`translateX(-50%) scale(${depth.scale}) rotate(${sway}deg)`,opacity:depth.opacity,zIndex:depth.zIndex,width:72,height:120,pointerEvents:'none'}}>
+      <svg viewBox="0 0 60 100" style={{width:'100%',height:'100%',overflow:'visible',filter:'drop-shadow(0 6px 8px rgba(91,106,72,0.08))'}}>
+        <ellipse cx="30" cy="89.5" rx={8.6 + tone*0.9} ry="3.8" fill="rgba(121,91,63,0.18)" />
+        {stage===1 && <>
+          <ellipse cx="30" cy="89" rx={10.4+tone*0.8} ry="5.2" fill="#9d7254" opacity="0.32" />
+          <path d="M18 89 Q30 81 42 89 Q30 94 18 89 Z" fill={earth} opacity="0.92" />
+          <ellipse cx="30" cy="84.2" rx="3.4" ry="2.2" fill="#f0ddad" transform={`rotate(${tone===1?-18:14} 30 84.2)`} />
+        </>}
+        {stage===2 && <>
+          <path d="M18 89 Q30 81 42 89 Q30 94 18 89 Z" fill={earth} opacity="0.9" />
+          <path d="M28 84 Q30 80 32 84" fill="none" stroke="#efe7c8" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M30 84 Q31 81 33 79" fill="none" stroke={leaf2} strokeWidth="2.1" strokeLinecap="round" opacity="0.96" />
+        </>}
+        {stage>=2 && <line x1="30" y1="85" x2={30 + sway*0.18} y2={stage>=5?40:80-stage*4} stroke={stem} strokeWidth={stage>=5?3.6:2.8} strokeLinecap="round" />}
+        {stage>=3 && <path d="M30 79 Q31 77 33 76" fill="none" stroke={leaf2} strokeWidth="2" strokeLinecap="round" opacity="0.92" />}
         {stage>=3 && <>
-          <ellipse cx={24-varShift*0.2} cy="76" rx="7" ry="4.5" fill={leaf2} transform="rotate(-22 24 76)"/>
-          <ellipse cx={36+varShift*0.2} cy="76" rx="7" ry="4.5" fill={leaf2} transform="rotate(22 36 76)"/>
+          <ellipse cx={24} cy="76" rx={7.2*leafSpread} ry="4.7" fill={leaf2} transform="rotate(-22 24 76)"/>
+          <ellipse cx={36} cy="76" rx={7.2*leafSpread} ry="4.7" fill={leaf2} transform="rotate(22 36 76)"/>
         </>}
         {stage>=4 && <>
-          <ellipse cx="23" cy="67" rx="8" ry="4.8" fill={leaf} transform="rotate(-28 23 67)"/>
-          <ellipse cx="37" cy="65" rx="8.5" ry="5" fill={leaf} transform="rotate(24 37 65)"/>
+          <ellipse cx="23" cy="67" rx={8.1*leafSpread} ry="5" fill={leaf} transform="rotate(-28 23 67)"/>
+          <ellipse cx="37" cy="65" rx={8.4*leafSpread} ry="5.1" fill={leaf} transform="rotate(24 37 65)"/>
+          {tone===1 && <ellipse cx="30" cy="62" rx="3.2" ry="7.8" fill={leaf2} opacity="0.72" />}
         </>}
         {stage>=5 && <>
-          <ellipse cx="22" cy="57" rx="9" ry="5.2" fill={leaf2} transform="rotate(-26 22 57)"/>
-          <ellipse cx="39" cy="52" rx="9" ry="5" fill={leaf2} transform="rotate(26 39 52)"/>
-          {plant.type==='beansprout' && <path d="M30 56 C38 52, 44 48, 43 38" fill="none" stroke={stem} strokeWidth="3" strokeLinecap="round"/>}
+          <ellipse cx="22" cy="57" rx={9.2*leafSpread} ry="5.4" fill={leaf2} transform="rotate(-26 22 57)"/>
+          <ellipse cx="39" cy="52" rx={9.2*leafSpread} ry="5.1" fill={leaf2} transform="rotate(26 39 52)"/>
+          {plant.type==='beansprout' && <path d="M30 56 C38 52, 44 48, 43 38" fill="none" stroke={stem} strokeWidth="2.6" strokeLinecap="round"/>}
         </>}
         {stage>=6 && plant.type==='mushroom' && <>
-          <line x1="27" y1="43" x2="27" y2="31" stroke="#e9dcc9" strokeWidth="4" strokeLinecap="round"/>
-          <ellipse cx="27" cy="29" rx="10" ry="6" fill={bloom}/>
-          <circle cx="23" cy="28" r="1.1" fill="#f9efe3"/><circle cx="29" cy="26" r="1" fill="#f9efe3"/>
+          <line x1="27" y1="43" x2="27" y2="31" stroke="#efe5d9" strokeWidth="4" strokeLinecap="round"/>
+          <ellipse cx="27" cy="29" rx={10 + tone*0.6} ry={6.2 + (tone===2?0.5:0)} fill={bloom}/>
+          <circle cx="23" cy="28" r="1.1" fill="#fff6ed"/><circle cx="29" cy="26" r="1" fill="#fff6ed"/>
         </>}
         {stage>=6 && plant.type!=='mushroom' && plant.type!=='lotus' && <>
           {plant.type==='sunflower'
-            ? <circle cx="30" cy="28" r={stage>=7?7:5} fill={stage>=7?'#7d4e20':'#5a8f3a'} />
+            ? <circle cx="30" cy={28+bloomLift} r={stage>=7?7.2:5.2} fill={stage>=7?'#8a6631':'#6b9d60'} />
             : plant.type==='tomato'
-              ? <circle cx="30" cy="28" r={stage>=7?6.5:4.8} fill={fruit} />
+              ? <circle cx="30" cy={28+bloomLift} r={stage>=7?6.7:4.9} fill={fruit} />
               : plant.type==='pumpkin'
-                ? <ellipse cx="30" cy="28" rx={stage>=7?9:6.2} ry={stage>=7?7.2:5} fill={fruit} />
+                ? <ellipse cx="30" cy={28+bloomLift} rx={stage>=7?9.2:6.4} ry={stage>=7?7.4:5.1} fill={fruit} />
                 : plant.type==='eggplant'
-                  ? <ellipse cx="31" cy="29" rx={stage>=7?6.2:4.5} ry={stage>=7?10:7} fill={fruit} transform="rotate(18 31 29)"/>
+                  ? <ellipse cx="31" cy={29+bloomLift} rx={stage>=7?6.4:4.6} ry={stage>=7?10.2:7.2} fill={fruit} transform="rotate(18 31 29)"/>
                   : plant.type==='carrot'
                     ? <path d="M30 23 L36 38 L24 38 Z" fill={fruit} />
                     : plant.type==='radish'
-                      ? <ellipse cx="30" cy="29" rx={stage>=7?7:5.5} ry={stage>=7?8.5:6} fill={fruit} />
-                      : <ellipse cx="30" cy="28" rx={stage>=7?7:5} ry={stage>=7?9:6} fill={bloom} />
+                      ? <ellipse cx="30" cy={29+bloomLift} rx={stage>=7?7.2:5.7} ry={stage>=7?8.7:6.2} fill={fruit} />
+                      : <ellipse cx="30" cy={28+bloomLift} rx={stage>=7?7.2:5.2} ry={stage>=7?9.2:6.1} fill={bloom} />
           }
-          {plant.type!=='sunflower' && <path d="M30 20 C28 22, 26 23, 24 23" fill="none" stroke={leaf2} strokeWidth="2" strokeLinecap="round"/>}
+          {plant.type!=='sunflower' && <path d="M30 20 C28 22, 26 23, 24 23" fill="none" stroke={leaf2} strokeWidth="1.8" strokeLinecap="round"/>}
         </>}
         {stage>=6 && plant.type==='lotus' && <>
-          <line x1="30" y1="86" x2="30" y2="38" stroke={stem} strokeWidth="3.6" strokeLinecap="round"/>
-          <ellipse cx="18" cy="56" rx="11" ry="6" fill="#6daa5f" />
-          <ellipse cx="42" cy="52" rx="11" ry="6" fill="#6daa5f" />
-          <ellipse cx="30" cy="32" rx={stage>=7?9:6} ry={stage>=7?7:5} fill="#f3aac0" />
+          <line x1="30" y1="86" x2="30" y2="38" stroke={stem} strokeWidth="3.4" strokeLinecap="round"/>
+          <ellipse cx="18" cy="56" rx="11" ry="6" fill="#82bb7f" />
+          <ellipse cx="42" cy="52" rx="11" ry="6" fill="#82bb7f" />
+          <ellipse cx="30" cy="32" rx={stage>=7?9.2:6.3} ry={stage>=7?7.2:5.2} fill="#f2bfd0" />
           {stage>=7 && <>
-            <ellipse cx="23" cy="35" rx="5" ry="12" fill="#f8c7d5" transform="rotate(-28 23 35)"/>
-            <ellipse cx="37" cy="35" rx="5" ry="12" fill="#f8c7d5" transform="rotate(28 37 35)"/>
-            <ellipse cx="30" cy="28" rx="5" ry="12" fill="#ffd4df" />
+            <ellipse cx="23" cy="35" rx="5" ry="12" fill="#f7d2de" transform="rotate(-28 23 35)"/>
+            <ellipse cx="37" cy="35" rx="5" ry="12" fill="#f7d2de" transform="rotate(28 37 35)"/>
+            <ellipse cx="30" cy="28" rx="5" ry="12" fill="#ffe0e7" />
           </>}
         </>}
         {stage>=7 && plant.type==='sunflower' && <>
@@ -1909,32 +1924,34 @@ function PlantSVG({ plant, allPlants }){
             const a = i * Math.PI / 6;
             const x = 30 + Math.cos(a)*11;
             const y = 28 + Math.sin(a)*11;
-            return <ellipse key={i} cx={x} cy={y} rx="3.1" ry="6.3" fill="#f4ca49" transform={`rotate(${i*30} ${x} ${y})`} />;
+            return <ellipse key={i} cx={x} cy={y} rx="3.1" ry="6.1" fill="#f7dea0" transform={`rotate(${i*30} ${x} ${y})`} />;
           })}
-          <circle cx="30" cy="28" r="6.8" fill="#7c4c20"/>
+          <circle cx="30" cy="28" r="6.8" fill="#8a6530"/>
         </>}
         {stage>=7 && plant.type==='cabbage' && <>
-          <circle cx="30" cy="28" r="10" fill="#88bc6a"/>
-          <path d="M22 28 Q30 18 38 28" fill="none" stroke="#a8d18a" strokeWidth="1.6"/>
-          <path d="M22 31 Q30 41 38 31" fill="none" stroke="#a8d18a" strokeWidth="1.4"/>
+          <circle cx="30" cy="28" r={10 + tone*0.4} fill="#97c883"/>
+          <path d="M22 28 Q30 18 38 28" fill="none" stroke="#c5e6b9" strokeWidth="1.5"/>
+          <path d="M22 31 Q30 41 38 31" fill="none" stroke="#c5e6b9" strokeWidth="1.3"/>
         </>}
         {stage>=7 && plant.type==='spinach' && <>
-          <ellipse cx="25" cy="30" rx="5" ry="13" fill="#6dac5a" transform="rotate(-12 25 30)"/>
-          <ellipse cx="35" cy="30" rx="5" ry="13" fill="#79b867" transform="rotate(12 35 30)"/>
+          <ellipse cx="25" cy="30" rx="5.1" ry="13.2" fill="#7bb56f" transform="rotate(-12 25 30)"/>
+          <ellipse cx="35" cy="30" rx="5.1" ry="13.2" fill="#8bc17c" transform="rotate(12 35 30)"/>
+          {tone===2 && <ellipse cx="30" cy="25" rx="3.5" ry="9" fill="#a8d99d" />}
         </>}
         {stage>=7 && plant.type==='mint' && <>
-          <ellipse cx="24" cy="28" rx="4.5" ry="11" fill="#78c989" transform="rotate(-24 24 28)"/>
-          <ellipse cx="36" cy="27" rx="4.5" ry="11" fill="#83d39a" transform="rotate(22 36 27)"/>
-          <ellipse cx="30" cy="23" rx="4.2" ry="9" fill="#93ddb0"/>
+          <ellipse cx="24" cy="28" rx="4.6" ry="11.2" fill="#91d3a7" transform="rotate(-24 24 28)"/>
+          <ellipse cx="36" cy="27" rx="4.6" ry="11.2" fill="#9dddaf" transform="rotate(22 36 27)"/>
+          <ellipse cx="30" cy="23" rx="4.3" ry="9.2" fill="#b4e8c6"/>
         </>}
         {stage>=8 && plant.type==='sunflower' && <>
-          {Array.from({length:8}).map((_,i)=><circle key={i} cx={26 + (i%4)*2.2} cy={24 + Math.floor(i/4)*4} r="0.9" fill="#3c2412"/>) }
+          {Array.from({length:8}).map((_,i)=><circle key={i} cx={26 + (i%4)*2.2} cy={24 + Math.floor(i/4)*4} r="0.9" fill="#4a3722" />) }
         </>}
       </svg>
       {seedParticles.map((p,i)=><span key={i} className="seed-float" style={{left:'50%',bottom:'70%', ['--dx']: `${p.dx}px`, ['--dy']: `${p.dy}px`, animationDelay:`${p.d}s`}}>•</span>)}
     </div>
   );
 }
+
 function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, confirmedTodayCount, pendingPlant, streakCount, pauseTodayLabel, onPauseMode, onBeginPlant, onCancelPlant, onPlantAt, onWater }){
   const today = todayISO();
   const month = new Date(today+'T00:00:00').getMonth()+1;
@@ -1943,10 +1960,17 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
   const bloomedCount = plants.filter(p=>getStage(p)>=7).length;
   const waterablePlants = plants.filter(plantNeedsWater);
   const longestWaterStreak = plants.reduce((m,p)=>Math.max(m, Number(p.wateredCount)||0),0);
-  const showButterfly = longestWaterStreak >= 7;
   const showBee = bloomedCount >= 10;
   const scene = getGardenScene();
-    const visitors = getGardenVisitors(scene, streakCount, plants.length);
+  const visitors = getGardenVisitors(scene, streakCount, plants.length);
+  const cloudCount = scene.weather === 'cloudy' ? 4 : scene.weather === 'partlyCloudy' ? 3 : scene.weather === 'rainy' ? 2 : 1;
+  const skyOrb = scene.timeSegment==='night'
+    ? {size:86, glow:'radial-gradient(circle, rgba(255,248,230,0.92) 0%, rgba(255,246,220,0.24) 42%, rgba(255,255,255,0) 72%)', top:'11%', right:'11%'}
+    : scene.timeSegment==='sunrise'
+      ? {size:110, glow:'radial-gradient(circle, rgba(255,217,170,0.88) 0%, rgba(255,217,170,0.28) 44%, rgba(255,255,255,0) 74%)', top:'8%', right:'10%'}
+      : scene.timeSegment==='evening'
+        ? {size:102, glow:'radial-gradient(circle, rgba(255,205,168,0.82) 0%, rgba(255,205,168,0.24) 44%, rgba(255,255,255,0) 76%)', top:'10%', right:'10%'}
+        : {size:96, glow:'radial-gradient(circle, rgba(255,241,200,0.92) 0%, rgba(255,241,200,0.24) 44%, rgba(255,255,255,0) 76%)', top:'9%', right:'10%'};
   const handlePlotClick = (e)=>{
     if(!pendingPlant) return;
     const rect = e.currentTarget.getBoundingClientRect();
@@ -1955,95 +1979,74 @@ function GardenView({ plants, gardenData, availableSeeds, plantedTodayCount, con
     onPlantAt(x,y);
   };
   return (
-    <div style={{padding:'12px 12px 100px',background:'linear-gradient(180deg, #f4faf1 0%, #edf6e8 100%)'}}>
-      <div className="recipe-paper" style={{borderRadius:18,padding:'14px 14px 12px',marginBottom:12,background:'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,252,244,0.96))'}}>
-        <div style={{display:'flex',justifyContent:'space-between',gap:10,alignItems:'flex-start'}}>
-          <div>
-            <div className="journal-kicker" style={{marginBottom:8}}>第 {gardenData.season} 季 · {seasonLabel}</div>
-            <div className="warm-script" style={{fontSize:34,lineHeight:1.12,color:'#3f4d2d',marginBottom:6}}>已陪你 {daysBetween(gardenData.seasonStart, today)+1} 天</div>
-            <div style={{fontSize:14,color:'#6d7b60',lineHeight:1.8}}>花圃不分週次，會一直長成屬於你的整片菜園。</div>
-            <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}>
-              <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>{scene.weatherMeta.emoji} {scene.label}</span>
-              <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>{scene.weatherMeta.emoji} {scene.weatherMeta.label}</span>
-              {streakCount>0 && <span style={{padding:'5px 10px',borderRadius:999,background:'rgba(255,255,255,0.82)',fontSize:12.5,color:'#6b785f'}}>連續 {streakCount} 天</span>}
-            </div>
-          </div>
-          <div style={{textAlign:'right',fontSize:13,color:'#7a866d',lineHeight:1.8,whiteSpace:'nowrap'}}>
-            <div>🌸 盛開 {bloomedCount} 株</div>
-            <div>🌱 已種 {plants.length} 顆</div>
-            <div>🎁 今日可種 {availableSeeds} 顆</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="recipe-paper" style={{borderRadius:20,overflow:'hidden',marginBottom:12,padding:0}}>
-        <div style={{padding:'12px 14px',borderBottom:'1px solid rgba(125,147,108,0.16)',background:'linear-gradient(180deg, #f5fbf1 0%, #eef7ea 100%)'}}>
-          <div style={{fontSize:14,fontWeight:700,color:'#567043',marginBottom:6}}>{pendingPlant ? '請點一下花圃，決定今天種子的落點' : '今天的花圃'}</div>
-          <div style={{fontSize:12.5,color:'#7d8b71',lineHeight:1.75}}>
-''
-          </div>
-        </div>
-        <div className="garden-plot" onClick={handlePlotClick} style={{position:'relative',height:'55vh',minHeight:360,overflowY:'auto',cursor:pendingPlant?'crosshair':'default',background:scene.sky}}>
-          <div className="garden-breeze" style={{position:'relative',minHeight:'100%',height:Math.max(420, 280 + plants.length * 32)}}>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{position:'absolute',left:0,right:0,bottom:0,width:'100%',height:'42%',pointerEvents:'none'}}>
-              <path d="M0 52 C 14 44, 27 58, 42 52 S 68 46, 100 56 L100 100 L0 100 Z" fill="#8B5E3C"/>
-              <path d="M0 60 C 18 52, 32 64, 50 58 S 77 52, 100 63 L100 100 L0 100 Z" fill="#7a5134" opacity="0.5"/>
-            </svg>
+    <div style={{padding:`0 0 calc(112px + env(safe-area-inset-bottom, 0px))`,background:'transparent'}}>
+      <div className="garden-plot" onClick={handlePlotClick} style={{position:'relative',height:'64vh',minHeight:420,margin:'0 calc(50% - 50vw)',width:'100vw',overflow:'hidden',cursor:pendingPlant?'crosshair':'default',background:scene.sky}}>
+        <div className="garden-breeze" style={{position:'relative',minHeight:'100%',height:Math.max(440, 300 + plants.length * 32)}}>
+            <div className="garden-light-orb" style={{position:'absolute',top:skyOrb.top,right:skyOrb.right,width:skyOrb.size,height:skyOrb.size,borderRadius:'50%',background:skyOrb.glow,opacity:scene.weather==='cloudy'?0.5:scene.weather==='rainy'?0.42:0.88,pointerEvents:'none'}} />
+            <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0) 56%)',pointerEvents:'none'}} />
             <div style={{position:'absolute',inset:0,background:scene.weatherMeta.overlay,pointerEvents:'none'}} />
-            {Array.from({length:8}).map((_,i)=><div key={i} style={{position:'absolute',left:`${i*13}%`,top:18+i*8,width:56,height:12,borderRadius:'50%',background:scene.haze,filter:'blur(8px)'}} />)}
-            {scene.timeSegment==='sunrise' && <div style={{position:'absolute',right:'9%',top:'10%',fontSize:34,opacity:0.75}}>🌅</div>}
-            {scene.timeSegment==='day' && <div style={{position:'absolute',right:'10%',top:'9%',fontSize:34,opacity:0.8}}>☀️</div>}
-            {scene.timeSegment==='evening' && <div style={{position:'absolute',right:'9%',top:'10%',fontSize:32,opacity:0.72}}>🌇</div>}
-            {scene.timeSegment==='night' && <div style={{position:'absolute',right:'10%',top:'9%',fontSize:34,opacity:0.78}}>🌙</div>}
-            {scene.weather==='rainy' && <div style={{position:'absolute',left:'11%',top:'12%',fontSize:28,opacity:0.84}}>🌧️</div>}
-            {scene.weather==='breezy' && <div style={{position:'absolute',left:'11%',top:'13%',fontSize:26,opacity:0.78}}>🍃</div>}
-            {streakCount>=14 && <div style={{position:'absolute',left:0,right:0,bottom:'24%',height:'15%',background:'linear-gradient(180deg, rgba(125,150,120,0.15), rgba(109,136,103,0.26))',clipPath:'polygon(0 100%, 0 55%, 11% 42%, 22% 58%, 35% 28%, 50% 60%, 63% 33%, 78% 56%, 90% 36%, 100% 58%, 100% 100%)',pointerEvents:'none'}} />}
-            {streakCount>=7 && <div style={{position:'absolute',left:'7%',bottom:'16%',fontSize:26,opacity:0.55}}>🪴</div>}
-            {streakCount>=7 && <div style={{position:'absolute',left:'15%',bottom:'11%',fontSize:24,opacity:0.42}}>🪨</div>}
-            {pauseTodayLabel==='rest' && <div style={{position:'absolute',right:'8%',bottom:'14%',fontSize:22,opacity:0.28}}>🍂</div>}
+            {Array.from({length:cloudCount}).map((_,i)=><div key={i} className="garden-cloud-slow" style={{position:'absolute',left:`${10 + i*21}%`,top:`${10 + (i%2)*7}%`,width:64 + i*8,height:20 + (i%2)*4,borderRadius:999,background:scene.timeSegment==='night'?'rgba(255,255,255,0.14)':'rgba(255,255,255,0.34)',filter:'blur(11px)',opacity:scene.weather==='sunny' && i===0 ? 0.22 : scene.weather==='breezy' ? 0.2 : 0.46,animationDelay:`${i*1.8}s`,pointerEvents:'none'}} />)}
+            {scene.weather==='rainy' && Array.from({length:18}).map((_,i)=><div key={i} style={{position:'absolute',left:`${6 + i*5.2}%`,top:`${20 + (i%3)*6}%`,width:1.4,height:16,borderRadius:999,background:'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(173,198,230,0.72))',opacity:0.52,pointerEvents:'none'}} />)}
+            {scene.timeSegment==='night' && Array.from({length:8}).map((_,i)=><div key={i} style={{position:'absolute',left:`${12 + i*10}%`,top:`${8 + (i%3)*5}%`,width:2.5 + (i%2),height:2.5 + (i%2),borderRadius:'50%',background:'rgba(255,245,215,0.82)',boxShadow:'0 0 8px rgba(255,245,215,0.26)',opacity:0.35 + (i%3)*0.07,pointerEvents:'none'}} />)}
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{position:'absolute',left:0,right:0,bottom:'18%',width:'100%',height:'35%',pointerEvents:'none'}}>
+              <path d="M0 74 C 16 66, 27 72, 42 65 S 70 69, 100 61 L100 100 L0 100 Z" fill={scene.hill} opacity="0.54"/>
+              <path d="M0 84 C 18 72, 37 79, 55 72 S 76 76, 100 68 L100 100 L0 100 Z" fill={scene.ground} opacity="0.84"/>
+            </svg>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{position:'absolute',left:0,right:0,bottom:0,width:'100%',height:'47%',pointerEvents:'none'}}>
+              <path d="M0 31 C 12 26, 22 35, 33 29 S 54 24, 68 31 S 86 27, 100 34 L100 100 L0 100 Z" fill="#cfe4b8" opacity="0.72"/>
+              <path d="M0 39 C 10 34, 23 43, 36 37 S 57 31, 71 38 S 89 34, 100 41 L100 100 L0 100 Z" fill="#a9ca93" opacity="0.84"/>
+              <path d="M0 52 C 16 46, 28 58, 42 53 S 68 47, 100 55 L100 100 L0 100 Z" fill="#d0a887"/>
+              <path d="M0 61 C 18 55, 32 67, 50 61 S 77 56, 100 65 L100 100 L0 100 Z" fill="#b78669" opacity="0.92"/>
+              <path d="M0 71 C 18 65, 30 76, 47 71 S 73 66, 100 74 L100 100 L0 100 Z" fill="#9a7056" opacity="0.94"/>
+              <path d="M0 79 C 16 73, 31 82, 48 78 S 76 73, 100 81 L100 100 L0 100 Z" fill="#7d5b45" opacity="0.94"/>
+            </svg>
+            <div style={{position:'absolute',left:0,right:0,bottom:'28%',height:'13%',background:'linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0))',pointerEvents:'none'}} />
+            {Array.from({length:8}).map((_,i)=><div key={i} style={{position:'absolute',left:`${i*13}%`,top:18+i*8,width:56,height:12,borderRadius:'50%',background:scene.haze,filter:'blur(12px)',opacity:0.78,pointerEvents:'none'}} />)}
+            {streakCount>=14 && <div style={{position:'absolute',left:0,right:0,bottom:'24%',height:'15%',background:'linear-gradient(180deg, rgba(125,150,120,0.12), rgba(109,136,103,0.2))',clipPath:'polygon(0 100%, 0 55%, 11% 42%, 22% 58%, 35% 28%, 50% 60%, 63% 33%, 78% 56%, 90% 36%, 100% 58%, 100% 100%)',pointerEvents:'none'}} />}
+            {streakCount>=7 && <div style={{position:'absolute',left:'12%',bottom:'13%',width:18,height:10,borderRadius:'55% 45% 55% 45%',background:'rgba(132,109,90,0.26)',filter:'blur(0.2px)',pointerEvents:'none'}} />}
+            {streakCount>=7 && <div style={{position:'absolute',left:'19%',bottom:'11%',width:12,height:8,borderRadius:'48% 52% 50% 50%',background:'rgba(145,123,102,0.22)',pointerEvents:'none'}} />}
+            {pauseTodayLabel==='rest' && <div style={{position:'absolute',right:'8%',bottom:'14%',fontSize:18,opacity:0.12}}>🍂</div>}
             {plants.slice().sort((a,b)=>getDepthScale(a,plants).zIndex - getDepthScale(b,plants).zIndex).map(plant=><PlantSVG key={plant.id} plant={plant} allPlants={plants} />)}
-            {pendingPlant && <div style={{position:'absolute',left:'50%',top:'18%',transform:'translateX(-50%)',padding:'10px 14px',borderRadius:999,background:'rgba(255,255,255,0.9)',boxShadow:'0 8px 18px rgba(70,90,45,0.12)',fontSize:13,fontWeight:700,color:'#597043'}}>點花圃任一位置種下今日種子 🌱</div>}
-            {visitors.butterfly && <div className="butterfly-loop" style={{position:'absolute',left:'18%',top:'28%',fontSize:22}}>🦋</div>}
-            {showBee && <div className="bee-loop" style={{position:'absolute',right:'14%',top:'24%',fontSize:22}}>🐝</div>}
-            {visitors.dandelion && <><div className="seed-float" style={{left:'14%',bottom:'34%', ['--dx']:'26px', ['--dy']:'-20px'}}>✦</div><div className="seed-float" style={{left:'23%',bottom:'41%', ['--dx']:'18px', ['--dy']:'-12px', animationDelay:'0.4s'}}>✦</div></>}
-            {visitors.firefly && <><div style={{position:'absolute',left:'18%',top:'36%',fontSize:10,opacity:0.8}}>✨</div><div style={{position:'absolute',right:'24%',top:'41%',fontSize:9,opacity:0.7}}>✨</div><div style={{position:'absolute',left:'41%',top:'32%',fontSize:8,opacity:0.65}}>✨</div></>}
-            {visitors.snail && <div style={{position:'absolute',left:'12%',bottom:'9%',fontSize:18,opacity:0.64}}>🐌</div>}
-            {visitors.bird && <div style={{position:'absolute',right:'12%',bottom:'24%',fontSize:18,opacity:0.72}}>🐦</div>}
-          </div>
+            {pendingPlant && <div style={{position:'absolute',left:'50%',top:'16%',transform:'translateX(-50%)',padding:'10px 14px',borderRadius:999,background:'rgba(255,255,255,0.72)',backdropFilter:'blur(8px)',boxShadow:'0 8px 18px rgba(70,90,45,0.09)',fontSize:13,fontWeight:700,color:'#597043'}}>點花圃任一位置種下今日種子 🌱</div>}
+            {visitors.butterfly && <div className="butterfly-loop" style={{position:'absolute',left:'18%',top:'28%',fontSize:18,opacity:0.82}}>🦋</div>}
+            {showBee && <div className="bee-loop" style={{position:'absolute',right:'14%',top:'24%',fontSize:18,opacity:0.8}}>🐝</div>}
+            {visitors.dandelion && <><div className="seed-float" style={{left:'14%',bottom:'34%', ['--dx']:'18px', ['--dy']:'-14px'}}>✦</div><div className="seed-float" style={{left:'23%',bottom:'41%', ['--dx']:'12px', ['--dy']:'-10px', animationDelay:'0.4s'}}>✦</div></>}
+            {visitors.firefly && <><div style={{position:'absolute',left:'18%',top:'36%',fontSize:8,opacity:0.56}}>✨</div><div style={{position:'absolute',right:'24%',top:'41%',fontSize:8,opacity:0.5}}>✨</div><div style={{position:'absolute',left:'41%',top:'32%',fontSize:7,opacity:0.45}}>✨</div></>}
+            {visitors.snail && <div style={{position:'absolute',left:'12%',bottom:'9%',fontSize:15,opacity:0.42}}>🐌</div>}
+            {visitors.bird && <div style={{position:'absolute',right:'12%',bottom:'24%',fontSize:15,opacity:0.48}}>🐦</div>}
         </div>
       </div>
 
-      <div style={{display:'flex',gap:8,marginBottom:12}}>
-        {availableSeeds>0 && !pendingPlant && <button onClick={onBeginPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'none',background:'#5e9b47',color:'#fff',fontSize:14.5,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>種下今日的種子 🌱</button>}
-        {pendingPlant && <button onClick={onCancelPlant} style={{flex:1,padding:'12px 14px',borderRadius:14,border:'1.5px solid #d7dfcf',background:'#fff',color:'#738169',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>先取消</button>}
-        
+      <div style={{position:'relative',zIndex:2,padding:'0 14px 0',marginTop:-18}}>
+        <div style={{display:'flex',gap:8,marginBottom:10,justifyContent:'center'}}>
+        {availableSeeds>0 && !pendingPlant && <button onClick={onBeginPlant} style={{flex:1,maxWidth:420,padding:'12px 16px',borderRadius:16,border:'none',background:'rgba(94,155,71,0.94)',backdropFilter:'blur(10px)',boxShadow:'0 10px 22px rgba(77,104,56,0.16)',color:'#fff',fontSize:15,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>種下今日的種子 🌱</button>}
+        {pendingPlant && <button onClick={onCancelPlant} style={{flex:1,maxWidth:420,padding:'12px 16px',borderRadius:16,border:'1.5px solid #d7dfcf',background:'rgba(255,255,255,0.84)',backdropFilter:'blur(10px)',boxShadow:'0 10px 22px rgba(88,97,79,0.08)',color:'#738169',fontSize:15,fontWeight:700,cursor:'pointer',fontFamily:"'Noto Sans TC'"}}>先取消</button>}
       </div>
 
-      <div className="recipe-paper" style={{borderRadius:18,padding:'13px 13px 10px'}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,marginBottom:10}}>
-          <div style={{fontSize:15,fontWeight:700,color:'#5a6d4a'}}>需要照顧的植物</div>
-          <div style={{fontSize:12.5,color:'#97a08d'}}>今天可澆水 {waterablePlants.length} 株</div>
-        </div>
-        {plants.length===0 ? null : (
-          <div style={{display:'grid',gap:8}}>
-            {plants.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(plant=>{
-              const stage = getStage(plant);
-              const canWater = plantNeedsWater(plant);
-              return (
-                <div key={plant.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 11px',borderRadius:14,background:canWater?'#f5fbf1':'#faf8f4',border:`1px solid ${canWater?'#d4e8c8':'#ebe4d8'}`}}>
-                  <div style={{width:42,height:42,borderRadius:12,background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 10px rgba(0,0,0,0.04)',fontSize:20}}>{stage>=7?'🌸':stage>=5?'🌿':stage>=3?'🌱':'·'}</div>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:14.5,fontWeight:700,color:'#5a4d3d'}}>{GARDEN_TYPE_LABELS[plant.type] || plant.type} · 第 {stage} 階段</div>
-                    <div style={{fontSize:12.5,color:'#8d8476',lineHeight:1.7}}>{plant.date} 種下 · 類別 {CATEGORY_LABELS[plant.category] || plant.category} · 已澆水 {plant.wateredCount} 次</div>
-                    <div style={{fontSize:12.5,color:'#75806a',lineHeight:1.7,marginTop:2}}>{getPlantFeedback(plant)}</div>
-                  </div>
-                  <button onClick={()=>onWater(plant.id)} disabled={!canWater} style={{padding:'9px 12px',borderRadius:12,border:'none',background:canWater?'#7cb8ff':'#e9edf3',color:canWater?'#fff':'#98a3b3',fontSize:13.5,fontWeight:700,cursor:canWater?'pointer':'default',fontFamily:"'Noto Sans TC'"}}>{canWater?'澆水 💧':plant.lastWatered===today?'今天澆過':'明天再來'}</button>
+      {plants.length>0 && <details className="recipe-paper" style={{borderRadius:20,padding:'10px 12px',background:'rgba(255,255,255,0.62)',backdropFilter:'blur(10px)',boxShadow:'0 12px 26px rgba(91,104,78,0.08)',border:'1px solid rgba(214,224,205,0.72)'}}>
+        <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,cursor:'pointer',listStyle:'none',padding:'3px 2px'}}>
+          <div style={{fontSize:14.5,fontWeight:700,color:'#5a6d4a'}}>已種的植物</div>
+          <div style={{fontSize:13,color:'#97a08d'}}>共 {plants.length} 株 · 今天可澆水 {waterablePlants.length} 株</div>
+        </summary>
+        <div style={{display:'grid',gap:8,marginTop:10}}>
+          {plants.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(plant=>{
+            const stage = getStage(plant);
+            const canWater = plantNeedsWater(plant);
+            return (
+              <div key={plant.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 11px',borderRadius:14,background:canWater?'#f5fbf1':'#faf8f4',border:`1px solid ${canWater?'#d4e8c8':'#ebe4d8'}`}}>
+                <div style={{width:42,height:42,borderRadius:12,background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 10px rgba(0,0,0,0.04)',fontSize:stage<3?18:20,lineHeight:1}}>{stage>=7?'🌸':stage>=5?'🌿':stage>=3?'🌱':'◔'}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:14.5,fontWeight:700,color:'#5a4d3d'}}>{GARDEN_TYPE_LABELS[plant.type] || plant.type} · 第 {stage} 階段</div>
+                  <div style={{fontSize:12.5,color:'#8d8476',lineHeight:1.7}}>{plant.date} 種下 · 類別 {CATEGORY_LABELS[plant.category] || plant.category} · 已澆水 {plant.wateredCount} 次</div>
+                  <div style={{fontSize:12.5,color:'#75806a',lineHeight:1.7,marginTop:2}}>{getPlantFeedback(plant)}</div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                <button onClick={()=>onWater(plant.id)} disabled={!canWater} style={{padding:'9px 12px',borderRadius:12,border:'none',background:canWater?'#7cb8ff':'#e9edf3',color:canWater?'#fff':'#98a3b3',fontSize:13.5,fontWeight:700,cursor:canWater?'pointer':'default',fontFamily:"'Noto Sans TC'"}}>{canWater?'澆水 💧':plant.lastWatered===today?'今天澆過':'明天再來'}</button>
+              </div>
+            );
+          })}
+        </div>
+      </details>}
+    </div>
     </div>
   );
 }
@@ -3237,16 +3240,29 @@ function App(){
           text-shadow:0 0 22px rgba(120,200,255,0.8),0 0 8px #fff;
         }
 
-        @keyframes plantSway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-        .plant-bloomed{animation:plantSway 3s ease-in-out infinite;transform-origin:bottom center;}
-        @keyframes gentleBreeze { 0%,100%{transform:translateX(0);} 50%{transform:translateX(2px);} }
-        .garden-breeze{animation:gentleBreeze 6s ease-in-out infinite;}
-        @keyframes seedFloat { 0% { opacity:1; transform: translate(0,0) scale(1); } 100% { opacity:0; transform: translate(var(--dx), var(--dy)) scale(0.3); } }
-        .seed-float{position:absolute;color:#8b5e3c;font-size:14px;animation:seedFloat 2.4s ease-out forwards;pointer-events:none;}
-        @keyframes beeLoop{0%,100%{transform:translate(0,0)}25%{transform:translate(12px,-8px)}50%{transform:translate(22px,6px)}75%{transform:translate(8px,12px)}}
-        .bee-loop{animation:beeLoop 5s linear infinite;}
-        @keyframes butterflyLoop{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(16px,-10px) scale(1.06)}}
-        .butterfly-loop{animation:butterflyLoop 4.2s ease-in-out infinite;}
+
+        .bottom-dock{transition:bottom .2s ease,padding .2s ease,box-shadow .2s ease;}
+        .bottom-dock-btn{min-width:0;flex:1;}
+        @media (max-height: 760px){
+          .bottom-dock{bottom:max(6px, env(safe-area-inset-bottom, 0px));}
+        }
+        @media (max-height: 700px){
+          .bottom-dock{width:min(calc(100vw - 10px), 390px);}
+        }
+        .plant-soft{transform-origin:bottom center;}
+        @keyframes plantSway { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(1.8deg); } }
+        .plant-bloomed{animation:plantSway 7.8s ease-in-out infinite;transform-origin:bottom center;}
+        @keyframes gentleBreeze { 0%,100%{transform:translateX(0);} 50%{transform:translateX(1.2px);} }
+        .garden-breeze{animation:gentleBreeze 12s ease-in-out infinite;}
+        @keyframes seedFloat { 0% { opacity:0.8; transform: translate(0,0) scale(1); } 100% { opacity:0; transform: translate(var(--dx), var(--dy)) scale(0.45); } }
+        .seed-float{position:absolute;color:#a88a73;font-size:12px;animation:seedFloat 3.6s ease-out forwards;pointer-events:none;}
+        @keyframes beeLoop{0%,100%{transform:translate(0,0)}25%{transform:translate(8px,-6px)}50%{transform:translate(14px,4px)}75%{transform:translate(5px,8px)}}
+        .bee-loop{animation:beeLoop 8.5s linear infinite;}
+        @keyframes butterflyLoop{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(10px,-7px) scale(1.03)}}
+        .butterfly-loop{animation:butterflyLoop 7.2s ease-in-out infinite;}
+        @keyframes cloudDrift{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
+        .garden-cloud-slow{animation:cloudDrift 18s ease-in-out infinite;}
+        .garden-light-orb{filter:blur(1px);}
 
       `}</style>
 
@@ -3270,6 +3286,7 @@ function App(){
       )}
 
       {/* ── Header ─────────────────────────────── */}
+      {view!=="garden"&&(
       <div style={{background:sc.hdr,padding:compactHeader?"12px 13px 10px":"18px 16px 15px",color:"#fff",position:"relative",overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.10)"}}>
         <div style={{position:"absolute",top:-40,right:-30,width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,0.04)"}}/>
         <div style={{position:"absolute",bottom:-60,left:-20,width:180,height:180,borderRadius:"50%",background:"rgba(255,255,255,0.03)"}}/>
@@ -3343,22 +3360,25 @@ function App(){
           )}
         </div>
       </div>
+      )}
 
       {/* ── 浮動底部膠囊導航 ── */}
-      <div style={{
-        position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",
+      <div className="bottom-dock" style={{
+        position:"fixed",bottom:"clamp(8px, calc(env(safe-area-inset-bottom, 0px) + 1.2vh), 24px)",left:"50%",transform:"translateX(-50%)",
         display:"flex",gap:2,alignItems:"center",
-        background:"rgba(255,252,248,0.88)",
+        background:"rgba(255,252,248,0.84)",
         backdropFilter:"blur(18px)",WebkitBackdropFilter:"blur(18px)",
         borderRadius:999,
-        padding:"9px 10px",
-        boxShadow:"0 8px 28px rgba(100,75,50,0.18),0 0 0 1px rgba(200,180,160,0.25)",
+        padding:"clamp(6px, 1.3vh, 9px) clamp(7px, 1.8vw, 10px)",
+        boxShadow:"0 8px 28px rgba(100,75,50,0.14),0 0 0 1px rgba(200,180,160,0.22)",
         zIndex:50,
+        width:"min(calc(100vw - 16px), 420px)",
+        justifyContent:"space-between",
       }}>
         {[["fridge","🧊","冰箱"],["menu","📋","菜單"],["usda","🔍","食材"],["garden","🌱","花園"]].map(([v,ico,lbl])=>(
-          <button key={v} onClick={()=>setView(v)} style={{
+          <button key={v} onClick={()=>setView(v)} className="bottom-dock-btn" style={{
             position:"relative",
-            padding:"9px 20px",border:"none",cursor:"pointer",
+            padding:"clamp(7px, 1.1vh, 9px) clamp(10px, 3.8vw, 20px)",border:"none",cursor:"pointer",
             background:view===v?sc.accent:"transparent",
             borderRadius:999,
             display:"flex",flexDirection:"column",alignItems:"center",gap:2,
@@ -3366,12 +3386,12 @@ function App(){
             transform:view===v?"scale(1.06)":"scale(1)",
           }}>
             <span style={{
-              fontSize:26,lineHeight:1,
+              fontSize:"clamp(22px, 3vh, 26px)",lineHeight:1,
               filter:view===v?"none":"grayscale(0.3) opacity(0.65)",
               transition:"all .2s",
             }} className={v==="fridge"&&fridgePulse?"fridge-pulse":""}>{ico}</span>
             <span style={{
-              fontSize:18,fontFamily:"'ChenyuLuoyan',cursive",
+              fontSize:"clamp(16px, 2.25vh, 20px)",fontFamily:"'ChenyuLuoyan',cursive",
               color:view===v?"#fff":"#b0a090",
               fontWeight:view===v?700:400,
               letterSpacing:"0.08em",
@@ -3399,7 +3419,7 @@ function App(){
 
       {/* ════ MENU VIEW ════ */}
       {view==="menu"&&(
-        <div style={{padding:"13px 13px 100px",background:"#faf7f2"}}>
+        <div style={{padding:"13px 13px calc(128px + env(safe-area-inset-bottom, 0px))",background:"#faf7f2"}}>
 
           {/* ── 庫存不足警示 ── */}
           {showMenuMetaControls&&invStatus.level==="low"&&(
